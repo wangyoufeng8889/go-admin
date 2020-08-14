@@ -3,6 +3,7 @@ package gorm
 import (
 	"github.com/jinzhu/gorm"
 	"go-admin/models"
+	"go-admin/models/batterymanage"
 	"go-admin/models/tools"
 )
 
@@ -77,6 +78,44 @@ func AutoMigrate(db *gorm.DB) error {
 		return err
 	}
 	err = db.AutoMigrate(new(models.SysSetting)).Error
+	if err != nil {
+		return err
+	}
+
+	//增加电池数据库迁移
+	err = db.AutoMigrate(new(batterymanage.Battery_list)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Bms_cellinfo)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Bms_specinfo)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Bms_historyinfo)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Bms_paraSetReg)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Bms_temperatureinfo)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Dtu_paraSetReg)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Dtu_specinfo)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Dtu_statusinfo)).Error
 	if err != nil {
 		return err
 	}
