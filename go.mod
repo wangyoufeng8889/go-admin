@@ -35,4 +35,5 @@ require (
 	github.com/unrolled/secure v1.0.8
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
 	golang.org/x/tools v0.0.0-20200402223321-bcf690261a44 // indirect
+	pack.ag/amqp v0.12.5
 )
