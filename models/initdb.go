@@ -10,6 +10,8 @@ import (
 func InitDb() error {
 	filePath := "config/db.sql"
 	err := ExecSql(filePath)
+	filePath = "config/db_batterymanage.sql"
+	err = ExecSql(filePath)
 	if global.Driver == "postgres" {
 		filePath = "config/pg.sql"
 		err = ExecSql(filePath)
