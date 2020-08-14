@@ -15,7 +15,7 @@ INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterylist/:pk
 INSERT INTO `sys_menu` VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', '', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (6, 'soc', '电量信息', 'date', '/api/bm1/battery/soc', '/0/4/6', 'C', '', '', 4, 1, '', '/soc/index', 2, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
-INSERT INTO `sys_menu` VALUES (7, 'track', '运动轨迹', 'druid', '/api/bm1/battery/track', '/0/4/7', 'C', '', '', 4, 1, '', '/track/index', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+INSERT INTO `sys_menu` VALUES (7, 'track', '运动轨迹', 'druid', '/api/bm1/battery/track', '/0/4/7', 'C', '', '', 4, 1, '', '/batterypath/index', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO sys_role_menu VALUES (2, 4, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (2, 5, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (2, 6, 'common', NULL, NULL);
