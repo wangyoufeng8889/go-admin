@@ -23,21 +23,35 @@ var Dtu_BMS_map map[string]string
 func init()  {
 	Dtu_BMS_map = make(map[string]string)
 }
-func ModbusServer(msg chan ModbusMessage)  {
+func ModbusServer(msg chan ModbusMessage) {
 	message := <-msg
-	if message.Topic == "/user/update"{
-		fmt.Println(message.DtuID)
-		addr,reglen,reg,err := modbusParseTcp(message)
+	if message.Topic == "/user/update" {
+		//fmt.Println(message.DtuID)
+		//addr, reglen, reg, err := modbusParseTcp(message)
+		_, _, _, err := modbusParseTcp(message)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		fmt.Println("ModbusServer=",addr,reglen,reg)
+		//fmt.Println("ModbusServer=", addr, reglen, reg)
+	}else if message.Topic == "/as/mqtt/status"{
+		aliyunOnOffprocess(message)
 	}else {
 		fmt.Println("ModbusServer topic is err=",message.Topic)
 	}
 }
-
+func aliyunOnOffprocess(msg ModbusMessage)  {
+	var battery_list batterymanage.Battery_list
+	battery_list.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
+	battery_list.Dtu_id=msg.DtuID
+	battery_list.Pkg_onOffLineStatus = uint8(msg.Payload[0])
+	var temp1 batterymanage.Battery_list
+	if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).First(&temp1).Error;err != nil {
+		orm.Eloquent.Create(&battery_list)
+	}else {
+		orm.Eloquent.Model(&battery_list).Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).First(&temp1).Update(&battery_list)
+	}
+}
 func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err error)  {
 	if len(msg.Payload) < 8 {
 		return 0, 0, nil,fmt.Errorf("payload is short")

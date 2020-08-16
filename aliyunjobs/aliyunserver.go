@@ -66,28 +66,60 @@ func (am *AmqpManager) processMessage(message *amqp.Message) {
 	case string:
 		topicdata = v
 	}
-	temp1:=strings.Split(topicdata,"/")
-	modbusMessage.ProductID =  temp1[1]
-	modbusMessage.DtuID =temp1[2]
-	modbusMessage.Topic ="/"+temp1[3]+"/"+temp1[4]
-	//2、解析payload
-	var messagePayload struct{Message string}
-	if err:=json.Unmarshal(message.GetData(),&messagePayload);err!=nil{
-		fmt.Println("err=",err)
-	}
-	fmt.Println(messagePayload.Message)
-	bytePayload,err:=hex.DecodeString(messagePayload.Message)
-	if err!=nil {
-		fmt.Println(err)
+	topicslic:=strings.Split(topicdata,"/")
+	if topicslic[1] == "as" && topicslic[2] == "mqtt" && topicslic[3] == "status" {
+		modbusMessage.ProductID =  topicslic[4]
+		modbusMessage.DtuID =topicslic[5]
+		modbusMessage.Topic ="/"+topicslic[1]+"/"+topicslic[2]+"/"+topicslic[3]
+		//2、解析payload
+		var messagePayload struct{LastTime string
+									UtcLastTime string
+									ClientIp string
+									UtcTime string
+									Time string
+									ProductKey string
+									DeviceName string
+									Status string}
+		if err:=json.Unmarshal(message.GetData(),&messagePayload);err!=nil{
+			fmt.Println("err=",err)
+		}
+		fmt.Println(messagePayload.Status)
+		if messagePayload.Status == "offline" {
+			modbusMessage.Payload = []byte{0}
+		}else {
+			modbusMessage.Payload = []byte{1}
+		}
+
+		switch v:=message.ApplicationProperties["generateTime"].(type) {
+		case int64:
+			modbusMessage.Timestamp = v
+		}
+		messageChan <- modbusMessage
+		go ModbusServer(messageChan)
+	}else if topicslic[1] == "a188ncLCDbX"{
+		modbusMessage.ProductID =  topicslic[1]
+		modbusMessage.DtuID =topicslic[2]
+		modbusMessage.Topic ="/"+topicslic[3]+"/"+topicslic[4]
+		//2、解析payload
+		var messagePayload struct{Message string}
+		if err:=json.Unmarshal(message.GetData(),&messagePayload);err!=nil{
+			fmt.Println("err=",err)
+		}
+		//fmt.Println(messagePayload.Message)
+		bytePayload,err:=hex.DecodeString(messagePayload.Message)
+		if err!=nil {
+			fmt.Println(err)
+		}
+
+		modbusMessage.Payload = bytePayload
+		switch v:=message.ApplicationProperties["generateTime"].(type) {
+		case int64:
+			modbusMessage.Timestamp = v
+		}
+		messageChan <- modbusMessage
+		go ModbusServer(messageChan)
 	}
 
-	modbusMessage.Payload = bytePayload
-	switch v:=message.ApplicationProperties["generateTime"].(type) {
-	case int64:
-		modbusMessage.Timestamp = v
-	}
-	messageChan <- modbusMessage
-	go ModbusServer(messageChan)
 }
 
 type AmqpManager struct {

@@ -45,11 +45,13 @@ func (e *Battery_list) GetPage(pageSize int, pageIndex int) ([]Battery_list, int
 	if e.Dtu_id != "" {
 		table = table.Where("dtu_id = ?", e.Dtu_id)
 	}
-	/*
-	if e.Bms_chargeStatus != "" {
-		table = table.Where("Bms_chargeStatus = ?", e.Bms_chargeStatus)
+	if e.Bms_chargeStatus < 0xFF {
+		table = table.Where("bms_charge_status = ?", e.Bms_chargeStatus)
 	}
-	*/
+	if e.Pkg_onOffLineStatus < 0xFF {
+		table = table.Where("pkg_on_off_line_status = ?", e.Pkg_onOffLineStatus)
+	}
+
 
 	// 数据权限控制
 	dataPermission := new(models.DataPermission)

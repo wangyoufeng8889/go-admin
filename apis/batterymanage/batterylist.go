@@ -36,7 +36,23 @@ func GetBatteryList(c *gin.Context) {
 
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 	data.Pkg_id = c.Request.FormValue("pkg_id")
-	//data.Bms_chargeStatus = c.Request.FormValue("bms_chargeStatus")
+
+	status := c.Request.FormValue("bms_chargeStatus")
+	if status != "" {
+		statusvalue,_:= tools.StringToInt(status)
+		data.Bms_chargeStatus = uint8(statusvalue)
+	}else {
+		data.Bms_chargeStatus = 0xFF
+	}
+
+	status = c.Request.FormValue("pkg_onOffLineStatus")
+	if status != "" {
+		statusvalue,_:= tools.StringToInt(status)
+		data.Pkg_onOffLineStatus = uint8(statusvalue)
+	}else {
+		data.Pkg_onOffLineStatus = 0xFF
+	}
+
 
 	data.DataScope = tools.GetUserIdStr(c)
 	result, count, err := data.GetPage(pageSize, pageIndex)
