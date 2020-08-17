@@ -25,6 +25,13 @@ type Battery_list struct {
 	Pkg_nominalVoltage   uint16    `json:"pkg_nominalVoltage" gorm:"Type：uint16"`
 	Dtu_type   uint8    `json:"dtu_type" gorm:"Type：uint8"`
 	Dtu_setupType   uint8    `json:"dtu_setupType" gorm:"Type：uint8"`
+	Dtu_latitudeType   uint8    `json:"dtu_latitudeType" gorm:"Type：uint8"`
+	Dtu_longitudeType   uint8    `json:"dtu_longitudeType" gorm:"Type：uint8"`
+	Dtu_latitude   string    `json:"dtu_latitude" gorm:"Type：size:20"`
+	Dtu_longitude   string    `json:"dtu_longitude" gorm:"Type：size:20"`
+	Dtu_csq   uint8    `json:"dtu_csq" gorm:"Type：uint8"`
+	Dtu_locateMode   uint8    `json:"dtu_locateMode" gorm:"Type：uint8"`
+
 	DataScope  string `json:"dataScope" gorm:"-"`
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
