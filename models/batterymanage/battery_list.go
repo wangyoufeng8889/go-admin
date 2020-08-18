@@ -48,6 +48,8 @@ func (e *Battery_list) GetPage(pageSize int, pageIndex int) ([]Battery_list, int
 	}
 	if e.Pkg_id != "" {
 		table = table.Where("pkg_id = ?", e.Pkg_id)
+	}else {
+		table = table.Not("pkg_id = ?", "0")
 	}
 	if e.Dtu_id != "" {
 		table = table.Where("dtu_id = ?", e.Dtu_id)

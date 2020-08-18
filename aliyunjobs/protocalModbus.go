@@ -49,7 +49,7 @@ func aliyunOnOffprocess(msg ModbusMessage)  {
 	if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).First(&temp1).Error;err != nil {
 		orm.Eloquent.Create(&battery_list)
 	}else {
-		orm.Eloquent.Model(&battery_list).Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).Find(&temp1).Update(&battery_list)
+		orm.Eloquent.Model(&battery_list).Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).Update(&battery_list)
 	}
 }
 func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err error)  {
