@@ -26,14 +26,14 @@ func init()  {
 func ModbusServer(msg chan ModbusMessage) {
 	message := <-msg
 	if message.Topic == "/user/update" {
-		//fmt.Println(message.DtuID)
+		fmt.Println(message.DtuID)
 		//addr, reglen, reg, err := modbusParseTcp(message)
-		_, _, _, err := modbusParseTcp(message)
+		addr, reglen, reg, err := modbusParseTcp(message)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		//fmt.Println("ModbusServer=", addr, reglen, reg)
+		fmt.Println("ModbusServer=", addr, reglen, reg)
 	}else if message.Topic == "/as/mqtt/status"{
 		aliyunOnOffprocess(message)
 	}else {
@@ -47,7 +47,7 @@ func aliyunOnOffprocess(msg ModbusMessage)  {
 	battery_list.Pkg_onOffLineStatus = uint8(msg.Payload[0])
 	var temp1 batterymanage.Battery_list
 	if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).First(&temp1).Error;err != nil {
-		orm.Eloquent.Create(&battery_list)
+		//orm.Eloquent.Create(&battery_list)
 	}else {
 		orm.Eloquent.Model(&battery_list).Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).Update(&battery_list)
 	}
@@ -159,7 +159,9 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_specinfo.Pkg_manufactureDate=time.Date(manufactureyear,time.Month(uint8(reg[24]>>8)),int(uint8(reg[24])),0,0,0,0,loc)
 	bms_specinfo.Bms_hardVer=uint8(reg[25]>>8)
 	bms_specinfo.Bms_softVer=uint8(reg[25])
-	bms_specinfo.Bms_protocolVer=uint16(reg[26])
+	data1 := reg[26]/100
+	data2 := reg[26]%100
+	bms_specinfo.Bms_protocolVer =  fmt.Sprintf("%d.%02d",data1,data2)
 	var temp batterymanage.Bms_specinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_specinfo{Pkg_id: pkg_id}).First(&temp).Error;err != nil {
 		orm.Eloquent.Create(&bms_specinfo)
@@ -190,7 +192,9 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_specinfo.Dtu_coreVer=uint16(reg[38])
 		dtu_specinfo.Dtu_hardVer=uint8(reg[39]>>8)
 		dtu_specinfo.Dtu_softVer=uint8(reg[39])
-		dtu_specinfo.Dtu_protocolVer=uint16(reg[40])
+		data1 := reg[40]/0x100
+		data2 := reg[40]%0x100
+		dtu_specinfo.Dtu_protocolVer =  fmt.Sprintf("%d.%02d",data1,data2)
 		dtu_specinfo.Dtu_devID=dtu_devid
 		dtu_specinfo.Dtu_simIccid=dtu_sim_iccid
 		dtu_specinfo.Dtu_imei=dtu_imei
@@ -268,7 +272,9 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_specinfo.Dtu_coreVer=uint16(reg[11])
 	dtu_specinfo.Dtu_hardVer=uint8(reg[12]>>8)
 	dtu_specinfo.Dtu_softVer=uint8(reg[12])
-	dtu_specinfo.Dtu_protocolVer=uint16(reg[13])
+	data1 := reg[13]/0x100
+	data2 := reg[13]%0x100
+	dtu_specinfo.Dtu_protocolVer =  fmt.Sprintf("%d.%02d",data1,data2)
 	dtu_specinfo.Dtu_devID=dtu_devid
 	dtu_specinfo.Dtu_simIccid=dtu_sim_iccid
 	dtu_specinfo.Dtu_imei=dtu_imei
@@ -305,10 +311,10 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfo.Bms_maxCellVoltage=uint16(reg[6])
 	bms_statusinfo.Bms_minCellVoltage=uint16(reg[7])
 	bms_statusinfo.Bms_averageCellVoltage=uint16(reg[8])
-	bms_statusinfo.Bms_maxTemperature=uint8(reg[9]>>8)
-	bms_statusinfo.Bms_minTemperature=uint8(reg[9])
-	bms_statusinfo.Bms_mosTemperature=uint8(reg[10]>>8)
-	bms_statusinfo.Bms_balanceResistance=uint8(reg[10])
+	bms_statusinfo.Bms_maxTemperature=uint8(reg[9]>>8) - 40
+	bms_statusinfo.Bms_minTemperature=uint8(reg[9]) - 40
+	bms_statusinfo.Bms_mosTemperature=uint8(reg[10]>>8) - 40
+	bms_statusinfo.Bms_balanceResistance=uint8(reg[10]) - 40
 	bms_statusinfo.Bms_chargeMosStatus=uint8(reg[11]>>8)
 	bms_statusinfo.Bms_dischargeMosStatus=uint8(reg[11])
 	bms_statusinfo.Bms_otaBufStatus=uint8(reg[12]>>8)
@@ -325,14 +331,30 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_statusinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
 		dtu_statusinfo.Pkg_id=pkg_id
 		dtu_statusinfo.Dtu_id=msg.DtuID
-		dtu_statusinfo.Dtu_latitudeType = uint8(reg[13] >> 8)
-		dtu_statusinfo.Dtu_longitudeType = uint8(reg[13])
-		dtu_statusinfo.Dtu_latitude = int(reg[14])<<16 + int(reg[15])
-		dtu_statusinfo.Dtu_longitude = int(reg[16])<<16 + int(reg[17])
+		if uint8(reg[13] >> 8) == 'N' {
+			dtu_statusinfo.Dtu_latitudeType = "N"
+		}else{
+			dtu_statusinfo.Dtu_latitudeType = "S"
+		}
+		if uint8(reg[13]) == 'E' {
+			dtu_statusinfo.Dtu_longitudeType = "E"
+		}else{
+			dtu_statusinfo.Dtu_longitudeType = "W"
+		}
+		Dtu_latitude := int(reg[14])<<16 + int(reg[15])
+		Dtu_longitude := int(reg[16])<<16 + int(reg[17])
+		var data1,data2 int
+		data1 = Dtu_latitude/1000000
+		data2 = Dtu_latitude%1000000
+		dtu_statusinfo.Dtu_latitude =  fmt.Sprint(data1,".",data2)
+		data1 = Dtu_longitude/1000000
+		data2 = Dtu_longitude%1000000
+		dtu_statusinfo.Dtu_longitude = fmt.Sprint(data1,".",data2)
+
 		dtu_statusinfo.Dtu_csq = uint8(reg[18] >> 8)
 		dtu_statusinfo.Dtu_locateMode = uint8(reg[19] >> 8)
 		dtu_statusinfo.Dtu_gpsSateCnt = uint8(reg[19])
-		dtu_statusinfo.Dtu_speed=uint16(reg[20])
+		dtu_statusinfo.Dtu_speed=uint16(reg[20])/100
 		dtu_statusinfo.Dtu_altitude=uint16(reg[21])
 		dtu_statusinfo.Dtu_pluginVoltage=uint8(reg[22] >> 8)
 		dtu_statusinfo.Dtu_selfInVoltage=uint8(reg[22])
@@ -348,18 +370,13 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		battery_list.Bms_chargeStatus=bms_statusinfo.Bms_chargeStatus
 		battery_list.Dtu_latitudeType = dtu_statusinfo.Dtu_latitudeType
 		battery_list.Dtu_longitudeType = dtu_statusinfo.Dtu_longitudeType
-		var data1,data2 int
-		data1 = dtu_statusinfo.Dtu_latitude/1000000
-		data2 = dtu_statusinfo.Dtu_latitude%1000000
-		battery_list.Dtu_latitude =  fmt.Sprint(data1,".",data2)
-		data1 = dtu_statusinfo.Dtu_longitude/1000000
-		data2 = dtu_statusinfo.Dtu_longitude%1000000
-		battery_list.Dtu_longitude = fmt.Sprint(data1,".",data2)
+		battery_list.Dtu_latitude =  dtu_statusinfo.Dtu_latitude
+		battery_list.Dtu_longitude = dtu_statusinfo.Dtu_longitude
 		battery_list.Dtu_csq = dtu_statusinfo.Dtu_csq
 		battery_list.Dtu_locateMode = dtu_statusinfo.Dtu_locateMode
 		var temp1 batterymanage.Battery_list
 		if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Error;err != nil {
-			orm.Eloquent.Create(&battery_list)
+			//orm.Eloquent.Create(&battery_list)
 		}else {
 			orm.Eloquent.Model(&battery_list).Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Update(&battery_list)
 		}
@@ -372,7 +389,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		battery_list.Bms_chargeStatus=bms_statusinfo.Bms_chargeStatus
 		var temp1 batterymanage.Battery_list
 		if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Error;err != nil {
-			orm.Eloquent.Create(&battery_list)
+			//orm.Eloquent.Create(&battery_list)
 		}else {
 			orm.Eloquent.Model(&battery_list).Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Update(&battery_list)
 		}
@@ -393,10 +410,26 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_statusinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
 	dtu_statusinfo.Pkg_id=pkg_id
 	dtu_statusinfo.Dtu_id=msg.DtuID
-	dtu_statusinfo.Dtu_latitudeType = uint8(reg[0] >> 8)
-	dtu_statusinfo.Dtu_longitudeType = uint8(reg[0])
-	dtu_statusinfo.Dtu_latitude = int(reg[1])<<16 + int(reg[2])
-	dtu_statusinfo.Dtu_longitude = int(reg[3])<<16 + int(reg[4])
+	if uint8(reg[0] >> 8) == 'N' {
+		dtu_statusinfo.Dtu_latitudeType = "N"
+	}else{
+		dtu_statusinfo.Dtu_latitudeType = "S"
+	}
+	if uint8(reg[0]) == 'E' {
+		dtu_statusinfo.Dtu_longitudeType = "E"
+	}else{
+		dtu_statusinfo.Dtu_longitudeType = "W"
+	}
+
+	Dtu_latitude := int(reg[1])<<16 + int(reg[2])
+	Dtu_longitude := int(reg[3])<<16 + int(reg[4])
+	var data1,data2 int
+	data1 = Dtu_latitude/1000000
+	data2 = Dtu_latitude%1000000
+	dtu_statusinfo.Dtu_latitude =  fmt.Sprint(data1,".",data2)
+	data1 = Dtu_longitude/1000000
+	data2 = Dtu_longitude%1000000
+	dtu_statusinfo.Dtu_longitude = fmt.Sprint(data1,".",data2)
 	dtu_statusinfo.Dtu_csq = uint8(reg[5] >> 8)
 	dtu_statusinfo.Dtu_locateMode = uint8(reg[6] >> 8)
 	dtu_statusinfo.Dtu_gpsSateCnt = uint8(reg[6])
@@ -481,12 +514,12 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_temperatureinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	bms_temperatureinfo.Pkg_id= pkg_id
 	bms_temperatureinfo.Dtu_id=msg.DtuID
-	bms_temperatureinfo.Bms_temperature1= uint8(reg[0]>>8)
-	bms_temperatureinfo.Bms_temperature2= uint8(reg[0])
-	bms_temperatureinfo.Bms_temperature3= uint8(reg[1]>>8)
-	bms_temperatureinfo.Bms_temperature4= uint8(reg[1])
-	bms_temperatureinfo.Bms_temperature5= uint8(reg[2]>>8)
-	bms_temperatureinfo.Bms_temperature6= uint8(reg[2])
+	bms_temperatureinfo.Bms_temperature1= uint8(reg[0]>>8) - 40
+	bms_temperatureinfo.Bms_temperature2= uint8(reg[0]) - 40
+	bms_temperatureinfo.Bms_temperature3= uint8(reg[1]>>8) - 40
+	bms_temperatureinfo.Bms_temperature4= uint8(reg[1]) - 40
+	bms_temperatureinfo.Bms_temperature5= uint8(reg[2]>>8) - 40
+	bms_temperatureinfo.Bms_temperature6= uint8(reg[2]) - 40
 	orm.Eloquent.Create(&bms_temperatureinfo)
 }
 func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
@@ -507,8 +540,8 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_historyinfo.Pkg_historyMaxCellVoltage= uint16(reg[0])
 	bms_historyinfo.Pkg_historyMinCellVoltage= uint16(reg[1])
 	bms_historyinfo.Pkg_historyMaxVoltageDif= uint16(reg[2])
-	bms_historyinfo.Pkg_historyMaxTemperature= uint8(reg[3]>>8)
-	bms_historyinfo.Pkg_historyMinTemperature= uint8(reg[3])
+	bms_historyinfo.Pkg_historyMaxTemperature= uint8(reg[3]>>8) - 40
+	bms_historyinfo.Pkg_historyMinTemperature= uint8(reg[3]) - 40
 	bms_historyinfo.Pkg_historyMaxDischargeCurrent= uint16(reg[4])
 	bms_historyinfo.Pkg_historyMaxChargeCurrent= uint16(reg[4])
 	bms_historyinfo.Pkg_nbrOfChargeDischarge= uint16(reg[4])

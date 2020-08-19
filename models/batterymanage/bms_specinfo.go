@@ -19,7 +19,7 @@ type Bms_specinfo struct {
 	Pkg_manufactureDate time.Time  `json:"pkg_manufactureDate"`
 	Bms_hardVer   uint8    `json:"bms_hardVer" gorm:"Type：uint8"`
 	Bms_softVer   uint8    `json:"bms_softVer" gorm:"Type：uint8"`
-	Bms_protocolVer   uint16    `json:"bms_protocolVer" gorm:"Type：uint16"`
+	Bms_protocolVer   string    `json:"bms_protocolVer" gorm:"Type：size:10"`
 	models.BaseModel
 }
 func (Bms_specinfo) TableName() string {

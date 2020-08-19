@@ -14,7 +14,7 @@ type Dtu_specinfo struct {
 	Dtu_coreVer   uint16    `json:"dtu_coreVer" gorm:"Type：uint16"`
 	Dtu_hardVer   uint8    `json:"dtu_hardVer" gorm:"Type：uint8"`
 	Dtu_softVer   uint8    `json:"dtu_softVer" gorm:"Type：uint8"`
-	Dtu_protocolVer   uint16    `json:"dtu_protocolVer" gorm:"Type：uint16"`
+	Dtu_protocolVer   string    `json:"dtu_protocolVer" gorm:"Type：size:10"`
 	Dtu_devID      string `json:"dtu_devID" gorm:"size:20;"`
 	Dtu_simIccid      string `json:"dtu_simIccid" gorm:"size:20;"`
 	Dtu_imei      string `json:"dtu_imei" gorm:"size:20;"`
