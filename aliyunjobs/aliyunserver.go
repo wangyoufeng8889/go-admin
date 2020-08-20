@@ -13,9 +13,9 @@ import (
 	"time"
 )
 //参数说明，请参见AMQP客户端接入说明文档。
-const uid = "1417495531119449"
-const accessKey = "LTAI4G6Kujdm7uBickjmPUrj"
-const accessSecret = "G7h57Y3JfQWeuLaGQp3P8Pc7YlAYIE"
+const uid = "****"
+const accessKey = "****"
+const accessSecret = "****"
 const region = "cn-shanghai"
 const consumerGroupId = "DEFAULT_GROUP"
 //iotInstanceId：购买的实例请填写实例ID，公共实例请填空字符串""。
