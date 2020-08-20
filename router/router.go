@@ -33,17 +33,24 @@ func examplesNoCheckRoleRouter(r *gin.Engine) {
 // 需要认证的路由示例
 func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddleware) {
 	// 可根据业务需求来设置接口版本,bm1表示batterymanage1
-	bm1 := r.Group("/api/bm1")
+	bm1 := r.Group("/api/bm1/")
 	// 空接口防止v1定义无使用报错
 	bm1.GET("/checkrole", nil)
 
 	// {{认证路由自动补充在此处请勿删除}}
 	registerUserBatterylistRouter(bm1, authMiddleware)
+	registerUserBatterydetailRouter(bm1, authMiddleware)
 }
 func registerUserBatterylistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
-	battertlist := user.Group("/battery").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	battertlist := user.Group("/batterylist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		battertlist.GET("/batterylist", batterymanage.GetBatteryList)
-		battertlist.DELETE("/batterylist/:battery_listId", batterymanage.DelOneBatteryList)
+		battertlist.GET("", batterymanage.GetBatteryList)
+		battertlist.DELETE("/:battery_listId", batterymanage.DelOneBatteryList)
+	}
+}
+func registerUserBatterydetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	battertlist := user.Group("/batterydetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		battertlist.GET("/dtu_statusinfo", batterymanage.GetBatteryDetail_dtu_statusinfo)
 	}
 }

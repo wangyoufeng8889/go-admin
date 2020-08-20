@@ -8,23 +8,29 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"go-admin/tools/config"
 	"pack.ag/amqp"
 	"strings"
 	"time"
 )
 //参数说明，请参见AMQP客户端接入说明文档。
-const uid = "****"
-const accessKey = "****"
-const accessSecret = "****"
-const region = "cn-shanghai"
+var uid string
+var accessKey string
+var accessSecret string
+var region string
 const consumerGroupId = "DEFAULT_GROUP"
 //iotInstanceId：购买的实例请填写实例ID，公共实例请填空字符串""。
 const iotInstanceId = ""
 //控制台服务端订阅中消费组状态页客户端ID一栏将显示clientId参数。
 //建议使用机器UUID、MAC地址、IP等唯一标识等作为clientId。便于您区分识别不同的客户端。
-const clientId = "john"
+var clientId string
 var messageChan chan ModbusMessage
 func AliyunServerRun() {
+	uid = config.AliyunConfig.Uid
+	accessKey = config.AliyunConfig.AccessKey
+	accessSecret = config.AliyunConfig.AccessSecret
+	region = config.AliyunConfig.Region
+	clientId = config.AliyunConfig.ClientId
 	//接入域名，请参见AMQP客户端接入说明文档。
 	address := fmt.Sprintf("amqps://%s.iot-amqp.%s.aliyuncs.com:5671", uid, region)
 	timestamp := time.Now().Nanosecond() / 1000000

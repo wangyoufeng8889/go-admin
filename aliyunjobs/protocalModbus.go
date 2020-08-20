@@ -319,13 +319,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfo.Bms_dischargeMosStatus=uint8(reg[11])
 	bms_statusinfo.Bms_otaBufStatus=uint8(reg[12]>>8)
 	bms_statusinfo.Bms_magneticCheck=uint8(reg[12])
-
-	var temp batterymanage.Bms_statusinfo
-	if err:=orm.Eloquent.Where(&batterymanage.Bms_statusinfo{Pkg_id: pkg_id}).First(&temp).Error;err != nil {
-		orm.Eloquent.Create(&bms_statusinfo)
-	}else {
-		orm.Eloquent.Model(&bms_statusinfo).Where(&batterymanage.Bms_statusinfo{Pkg_id: pkg_id}).First(&temp).Update(&bms_statusinfo)
-	}
+	orm.Eloquent.Create(&bms_statusinfo)
 	if reglen == 25 {
 		var dtu_statusinfo batterymanage.Dtu_statusinfo
 		dtu_statusinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
