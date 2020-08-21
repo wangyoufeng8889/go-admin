@@ -17,6 +17,7 @@ require (
 	github.com/gogf/gf v1.13.2
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/websocket v1.4.1
+	github.com/iancoleman/strcase v0.1.0
 	github.com/jinzhu/gorm v1.9.10
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/matchstalk/redisqueue v1.0.3

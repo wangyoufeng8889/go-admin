@@ -1,13 +1,13 @@
 -- 开始初始化数据 ;
 BEGIN;
-INSERT INTO sys_dict_type VALUES (11, '电池状态', 'sys_charge_status', 0, '1', '1', '电池状态列表', '2020-04-11 15:52:48', NULL, NULL);
-INSERT INTO sys_dict_type VALUES (12, '网络状态', 'sys_net_status', 0, '1', '1', '网络状态列表', '2020-04-11 15:52:48', NULL, NULL);
+INSERT INTO sys_dict_type VALUES (11, '电池状态', 'sys_charge_status', 0, '1', '', '电池状态列表', '2020-04-11 15:52:48', NULL, NULL);
+INSERT INTO sys_dict_type VALUES (12, '网络状态', 'sys_net_status', 0, '1', '', '网络状态列表', '2020-04-11 15:52:48', NULL, NULL);
 
-INSERT INTO sys_dict_data VALUES (32, 0, '搁置', '0', 'sys_charge_status', NULL, NULL, NULL, 0, NULL, '1', NULL, '电池搁置', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
-INSERT INTO sys_dict_data VALUES (33, 0, '充电', '1', 'sys_charge_status', NULL, NULL, NULL, 0, NULL, '1', NULL, '电池充电', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
-INSERT INTO sys_dict_data VALUES (34, 0, '放电', '2', 'sys_charge_status', NULL, NULL, NULL, 0, NULL, '1', NULL, '电池放电', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
-INSERT INTO sys_dict_data VALUES (35, 0, '离线', '0', 'sys_net_status', NULL, NULL, NULL, 0, NULL, '1', NULL, '电池离线', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
-INSERT INTO sys_dict_data VALUES (36, 0, '在线', '1', 'sys_net_status', NULL, NULL, NULL, 0, NULL, '1', NULL, '电池在线', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
+INSERT INTO sys_dict_data VALUES (32, 0, '搁置', '0', 'sys_charge_status', '', '', '', 0, '', '1', '', '电池搁置', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
+INSERT INTO sys_dict_data VALUES (33, 0, '充电', '1', 'sys_charge_status', '', '', '', 0, '', '1', '', '电池充电', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
+INSERT INTO sys_dict_data VALUES (34, 0, '放电', '2', 'sys_charge_status', '', '', '', 0, '', '1', '', '电池放电', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
+INSERT INTO sys_dict_data VALUES (35, 0, '离线', '0', 'sys_net_status', '', '', '', 0, '', '1', '', '电池离线', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
+INSERT INTO sys_dict_data VALUES (36, 0, '在线', '1', 'sys_net_status', '', '', '', 0, '', '1', '', '电池在线', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/batterylist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/batterylist', 'GET', NULL, NULL, NULL);
