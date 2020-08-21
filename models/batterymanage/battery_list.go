@@ -15,6 +15,7 @@ type Battery_list struct {
 	Bms_chargeStatus   uint8    `json:"bms_chargeStatus" gorm:"Type：uint8"`
 	Bms_soc   uint8    `json:"bms_soc" gorm:"Type：uint8"`
 	Pkg_onOffLineStatus   uint8    `json:"pkg_onOffLineStatus" gorm:"Type：uint8"`
+	DTU_onOffLineStatus   uint8    `json:"dtu_onOffLineStatus" gorm:"Type：uint8"`
 	Pkg_errStatus   uint8    `json:"pkg_errStatus" gorm:"Type：uint8"`
 	Pkg_abnormalStatus   uint8    `json:"pkg_abnormalStatus" gorm:"Type：uint8"`
 	Pkg_usableStatus   uint8    `json:"pkg_usableStatus" gorm:"Type：uint8"`
@@ -49,7 +50,7 @@ func (e *Battery_list) GetPage(pageSize int, pageIndex int) ([]Battery_list, int
 	if e.Pkg_id != "" {
 		table = table.Where("pkg_id = ?", e.Pkg_id)
 	}else {
-		table = table.Not("pkg_id = ?", "0")
+		table = table.Not("pkg_id = ?", "")
 	}
 	if e.Dtu_id != "" {
 		table = table.Where("dtu_id = ?", e.Dtu_id)
