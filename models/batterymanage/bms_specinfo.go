@@ -54,7 +54,7 @@ func (e *Bms_specInfo) GetBms_specinfo(pageSize int, pageIndex int,is_oneList st
 	}
 	var count int
 	if is_oneList == "YES" {
-		if err := table.Order("dtu_uptime").First(&doc).Error; err != nil {
+		if err := table.Order("dtu_uptime desc").First(&doc).Error; err != nil {
 			return nil, 0, err
 		}
 		table.Where("`deleted_at` IS NULL").Count(&count)

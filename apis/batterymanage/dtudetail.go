@@ -77,4 +77,19 @@ func GetDTUDetail_dtu_specinfo(c *gin.Context) {
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }
+func GetDTUDetail_dtu_aliyun(c *gin.Context) {
+	var data batterymanage.Dtu_aliyun
+	var err error
+	//2006-01-02 15:04:05.9999999 +0800
+	id := c.Request.FormValue("dtu_aliyunId")
+	data.Dtu_aliyunId, _ = tools.StringToInt(id)
 
+	data.Dtu_id = c.Request.FormValue("dtu_id")
+	var is_oneList string = c.Request.FormValue("is_oneList")
+
+	data.DataScope = tools.GetUserIdStr(c)
+	result,count, err := data.GetDtu_aliyun(is_oneList)
+	fmt.Println(count)
+	tools.HasError(err, "", -1)
+	app.OK(c, result, "")
+}

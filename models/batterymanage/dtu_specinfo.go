@@ -52,12 +52,12 @@ func (e *Dtu_specInfo) Getdtu_specinfo(is_oneList string) ([]Dtu_specInfo,int, e
 	}
 	var count int
 	if is_oneList == "YES" {
-		if err := table.Order("dtu_uptime").First(&doc).Error; err != nil {
+		if err := table.Order("dtu_uptime desc").First(&doc).Error; err != nil {
 			return nil, 0, err
 		}
 		table.Where("`deleted_at` IS NULL").Count(&count)
 	}else{
-		if err := table.Order("dtu_uptime").Find(&doc).Error; err != nil {
+		if err := table.Order("dtu_spec_info_id").Find(&doc).Error; err != nil {
 			return nil, 0, err
 		}
 		table.Where("`deleted_at` IS NULL").Count(&count)

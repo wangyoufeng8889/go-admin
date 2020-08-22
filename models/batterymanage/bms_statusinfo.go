@@ -61,12 +61,12 @@ func (e *Bms_statusInfo) GetBms_statusinfo(startdate time.Time, enddate time.Tim
 	}
 	var count int
 	if is_oneList == "YES" {
-		if err := table.Order("dtu_uptime").First(&doc).Error; err != nil {
+		if err := table.Order("dtu_uptime desc").First(&doc).Error; err != nil {
 			return nil, 0, err
 		}
 		table.Where("`deleted_at` IS NULL").Count(&count)
 	}else{
-		if err := table.Order("dtu_uptime").Find(&doc).Error; err != nil {
+		if err := table.Order("bms_status_info_id").Find(&doc).Error; err != nil {
 			return nil, 0, err
 		}
 		table.Where("`deleted_at` IS NULL").Count(&count)

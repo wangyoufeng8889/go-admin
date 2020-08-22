@@ -68,5 +68,6 @@ func registerUserBDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.Gin
 	{
 		battertlist.GET("/dtu_statusinfo", batterymanage.GetDTUDetail_dtu_statusinfo)
 		battertlist.GET("/dtu_specinfo", batterymanage.GetDTUDetail_dtu_specinfo)
+		battertlist.GET("/dtu_aliyun", batterymanage.GetDTUDetail_dtu_aliyun)
 	}
 }
