@@ -26,6 +26,7 @@ type Dtu_statusinfo struct {
 	Dtu_errNbr   uint8    `json:"dtu_errNbr" gorm:"Type：uint8"`
 	Dtu_errCode   uint16    `json:"dtu_errCode" gorm:"Type：uint16"`
 	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Dtu_statusinfo) TableName() string {

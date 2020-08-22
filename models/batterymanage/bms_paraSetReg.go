@@ -54,6 +54,8 @@ type Bms_paraSetReg struct {
 	Bms_magneticCheckEnable   uint16    `json:"bms_magneticCheckEnable" gorm:"Type：uint16"`
 	Bms_forceIntoStorageMode   uint16    `json:"bms_forceIntoStorageMode" gorm:"Type：uint16"`
 	Bms_enableChargeStatus   uint16    `json:"bms_enableChargeStatus" gorm:"Type：uint16"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Bms_paraSetReg) TableName() string {

@@ -33,7 +33,7 @@ func examplesNoCheckRoleRouter(r *gin.Engine) {
 // 需要认证的路由示例
 func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddleware) {
 	// 可根据业务需求来设置接口版本,bm1表示batterymanage1
-	bm1 := r.Group("/api/bm1/")
+	bm1 := r.Group("/api/bm1/battery")
 	// 空接口防止v1定义无使用报错
 	bm1.GET("/checkrole", nil)
 

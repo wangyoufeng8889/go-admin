@@ -14,6 +14,8 @@ type Dtu_paraSetReg struct {
 	Dtu_voiceTipsThresholdValue   uint8    `json:"dtu_voiceTipsThresholdValue" gorm:"Type：uint8"`
 	Dtu_voiceTipsDownBulk   uint8    `json:"dtu_voiceTipsDownBulk" gorm:"Type：uint8"`
 	Dtu_otaIP      string `json:"dtu_otaIP" gorm:"size:20;"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Dtu_paraSetReg) TableName() string {

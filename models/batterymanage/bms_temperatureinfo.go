@@ -14,6 +14,8 @@ type Bms_temperatureinfo struct {
 	Bms_temperature4   uint8    `json:"bms_temperature4" gorm:"Type：uint8"`
 	Bms_temperature5   uint8    `json:"bms_temperature5" gorm:"Type：uint8"`
 	Bms_temperature6   uint8    `json:"bms_temperature6" gorm:"Type：uint8"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Bms_temperatureinfo) TableName() string {

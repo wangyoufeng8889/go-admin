@@ -17,6 +17,8 @@ type Bms_historyinfo struct {
 	Pkg_historyMaxChargeCurrent   uint16    `json:"pkg_historyMaxChargeCurrent" gorm:"Type：uint16"`
 	Pkg_nbrOfChargeDischarge   uint16    `json:"pkg_nbrOfChargeDischarge" gorm:"Type：uint16"`
 	Pkg_nbrofChargingCycle   uint16    `json:"pkg_nbrofChargingCycle" gorm:"Type：uint16"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Bms_historyinfo) TableName() string {

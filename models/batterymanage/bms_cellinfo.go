@@ -28,6 +28,8 @@ type Bms_cellinfo struct {
 	Bms_cellVoltage18   uint16    `json:"bms_cellVoltage18" gorm:"Type：uint16"`
 	Bms_cellVoltage19   uint16    `json:"bms_cellVoltage19" gorm:"Type：uint16"`
 	Bms_cellVoltage20   uint16    `json:"bms_cellVoltage20" gorm:"Type：uint16"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Bms_cellinfo) TableName() string {

@@ -83,7 +83,18 @@ func AutoMigrate(db *gorm.DB) error {
 	}
 
 	//增加电池数据库迁移
+	/*
 	err = db.AutoMigrate(new(batterymanage.Battery_list)).Error
+	if err != nil {
+		return err
+	}
+
+	 */
+	err = db.AutoMigrate(new(batterymanage.DtuPkg_list)).Error
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(new(batterymanage.Dtu_aliyun)).Error
 	if err != nil {
 		return err
 	}

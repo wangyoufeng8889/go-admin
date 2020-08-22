@@ -19,10 +19,22 @@ type ModbusMessage struct {
 	Topic string
 }
 //mao[dtu_id]pkg_id
-var Dtu_BMS_map map[string]string
+var Dtu_Pkg_map map[string]string
 
+func readDtuPkgMapFromDB()  {
+	time.Sleep(5000 * time.Millisecond)
+	var dtuPkg_list []batterymanage.DtuPkg_list
+
+	orm.Eloquent.Not(batterymanage.DtuPkg_list{Dtu_id: ""}).Find(&dtuPkg_list)
+	for _, dtupkg := range dtuPkg_list{
+		Dtu_Pkg_map[dtupkg.Dtu_id] = dtupkg.Pkg_id
+	}
+
+
+}
 func init()  {
-	Dtu_BMS_map = make(map[string]string)
+	Dtu_Pkg_map = make(map[string]string)
+	go readDtuPkgMapFromDB()
 }
 func ModbusServer(msg chan ModbusMessage) {
 	message := <-msg
@@ -42,20 +54,11 @@ func ModbusServer(msg chan ModbusMessage) {
 	}
 }
 func aliyunOnOffprocess(msg ModbusMessage)  {
-	var battery_list batterymanage.Battery_list
-	battery_list.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
-	battery_list.Dtu_id=msg.DtuID
-	battery_list.DTU_onOffLineStatus = uint8(msg.Payload[0])
-	var temp1 batterymanage.Battery_list
-	if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).First(&temp1).Error;err != nil {
-		orm.Eloquent.Create(&battery_list)
-	}else {
-		gormdata := make(map[string]interface{})
-		gormdata[strcase.ToSnake("Dtu_uptime")]=battery_list.Dtu_uptime
-		gormdata[strcase.ToSnake("Dtu_id")]=battery_list.Dtu_id
-		gormdata[strcase.ToSnake("DTU_onOffLineStatus")]=battery_list.DTU_onOffLineStatus
-		orm.Eloquent.Model(batterymanage.Battery_list{}).Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).Updates(gormdata)
-	}
+	var dtu_aliyun batterymanage.Dtu_aliyun
+	dtu_aliyun.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
+	dtu_aliyun.Dtu_id=msg.DtuID
+	dtu_aliyun.Dtu_aliyunStatus = uint8(msg.Payload[0])
+	orm.Eloquent.Create(&dtu_aliyun)
 }
 func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err error)  {
 	if len(msg.Payload) < 8 {
@@ -132,14 +135,14 @@ func sliceUin16Tobyte(sl_in []uint16)(sl_out []byte,err error)  {
 	return sl_out,nil
 }
 func Dtu_BMS_map_Init(msg ModbusMessage)(bool)  {
-	var dtu_specinfo batterymanage.Dtu_specinfo
+	var dtuPkg_list batterymanage.DtuPkg_list
 
-	orm.Eloquent.Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).First(&dtu_specinfo)
-	if len(dtu_specinfo.Pkg_id)>0 {
-		Dtu_BMS_map[msg.DtuID] = dtu_specinfo.Pkg_id
+	orm.Eloquent.Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).First(&dtuPkg_list)
+	if len(dtuPkg_list.Pkg_id)>0 {
+		Dtu_Pkg_map[msg.DtuID] = dtuPkg_list.Pkg_id
 		return false
 	}else{
-		Dtu_BMS_map[msg.DtuID] = ""
+		Dtu_Pkg_map[msg.DtuID] = ""
 		return false
 	}
 }
@@ -200,7 +203,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		if dtu_id != msg.DtuID {
 			fmt.Println("dtu id is err")
 		}else {
-			Dtu_BMS_map[dtu_id]=pkg_id
+			Dtu_Pkg_map[dtu_id]=pkg_id
 		}
 
 		var dtu_specinfo batterymanage.Dtu_specinfo
@@ -219,91 +222,31 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_specinfo.Dtu_simIccid=dtu_sim_iccid
 		dtu_specinfo.Dtu_imei=dtu_imei
 		dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[71])
-		var temp batterymanage.Dtu_specinfo
-		if err:=orm.Eloquent.Where(&batterymanage.Dtu_specinfo{Dtu_id: dtu_id}).First(&temp).Error;err != nil {
-			orm.Eloquent.Create(&dtu_specinfo)
+		orm.Eloquent.Create(&dtu_specinfo)
+		var dtuPkg_list batterymanage.DtuPkg_list
+		dtuPkg_list.Bind_uptime = dtu_specinfo.Dtu_uptime
+		dtuPkg_list.Dtu_id = dtu_id
+		if dtu_specinfo.Dtu_bmsBindStatus == 0 {
+			dtuPkg_list.Pkg_id = ""
+		}else {
+			dtuPkg_list.Pkg_id = pkg_id
+		}
+		var temp batterymanage.DtuPkg_list
+		if err:=orm.Eloquent.Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).First(&temp).Error;err != nil {
+			orm.Eloquent.Create(&dtuPkg_list)
 		}else {
 			gormdata := make(map[string]interface{})
-			gormdata[strcase.ToSnake("Dtu_uptime")] = dtu_specinfo.Dtu_uptime
-			gormdata[strcase.ToSnake("Dtu_id")] = dtu_specinfo.Dtu_id
-			gormdata[strcase.ToSnake("Pkg_id")] = dtu_specinfo.Pkg_id
-			gormdata[strcase.ToSnake("Dtu_type")] = dtu_specinfo.Dtu_type
-			gormdata[strcase.ToSnake("Dtu_setupType")] = dtu_specinfo.Dtu_setupType
-			gormdata[strcase.ToSnake("Dtu_coreVer")] = dtu_specinfo.Dtu_coreVer
-			gormdata[strcase.ToSnake("Dtu_hardVer")] = dtu_specinfo.Dtu_hardVer
-			gormdata[strcase.ToSnake("Dtu_softVer")] = dtu_specinfo.Dtu_softVer
-			gormdata[strcase.ToSnake("Dtu_protocolVer")] = dtu_specinfo.Dtu_protocolVer
-			gormdata[strcase.ToSnake("Dtu_devID")] = dtu_specinfo.Dtu_devID
-			gormdata[strcase.ToSnake("Dtu_simIccid")] = dtu_specinfo.Dtu_simIccid
-			gormdata[strcase.ToSnake("Dtu_imei")] = dtu_specinfo.Dtu_imei
-			gormdata[strcase.ToSnake("Dtu_bmsBindStatus")] = dtu_specinfo.Dtu_bmsBindStatus
-			orm.Eloquent.Model(batterymanage.Dtu_specinfo{}).Where(&batterymanage.Dtu_specinfo{Dtu_id: dtu_id}).Updates(gormdata)
-		}
-		var battery_list batterymanage.Battery_list
-		battery_list.Dtu_uptime=bms_specinfo.Dtu_uptime
-		battery_list.Pkg_id=pkg_id
-		battery_list.Dtu_id=msg.DtuID
-		battery_list.Pkg_count=uint8(reg[20]>>8)
-		battery_list.Pkg_type=uint8(reg[20])
-		battery_list.Pkg_capacity=uint16(reg[21])
-		battery_list.Pkg_nominalVoltage=uint16(reg[22])
-		battery_list.Dtu_type = dtu_specinfo.Dtu_type
-		battery_list.Dtu_setupType = dtu_specinfo.Dtu_setupType
-		var temp1 batterymanage.Battery_list
-		if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Error;err != nil {
-			orm.Eloquent.Create(&battery_list)
-		}else if pkg_id != ""{
-			gormdata := make(map[string]interface{})
-			gormdata[strcase.ToSnake("Dtu_uptime")] = battery_list.Dtu_uptime
-			gormdata[strcase.ToSnake("Pkg_id")] = battery_list.Pkg_id
-			gormdata[strcase.ToSnake("Dtu_id")] = battery_list.Dtu_id
-			gormdata[strcase.ToSnake("Pkg_count")] = battery_list.Pkg_count
-			gormdata[strcase.ToSnake("Pkg_type")] = battery_list.Pkg_type
-			gormdata[strcase.ToSnake("Pkg_capacity")] = battery_list.Pkg_capacity
-			gormdata[strcase.ToSnake("Pkg_nominalVoltage")] = battery_list.Pkg_nominalVoltage
-			gormdata[strcase.ToSnake("Dtu_type")] = battery_list.Dtu_type
-			gormdata[strcase.ToSnake("Dtu_setupType")] = battery_list.Dtu_setupType
-			orm.Eloquent.Model(batterymanage.Battery_list{}).Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).Updates(gormdata)
-		}
-	}else{
-		Dtu_BMS_map[msg.DtuID]=pkg_id
-		var dtu_specinfo batterymanage.Dtu_specinfo
-		dtu_specinfo.Dtu_uptime=bms_specinfo.Dtu_uptime
-		dtu_specinfo.Dtu_id= msg.DtuID
-		dtu_specinfo.Pkg_id= pkg_id
-		var temp batterymanage.Dtu_specinfo
-		if err:=orm.Eloquent.Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).First(&temp).Error;err != nil {
-			orm.Eloquent.Create(&dtu_specinfo)
-		}else {
-			gormdata := make(map[string]interface{})
-			gormdata[strcase.ToSnake("Dtu_uptime")] = dtu_specinfo.Dtu_uptime
-			gormdata[strcase.ToSnake("Dtu_id")] = dtu_specinfo.Dtu_id
-			gormdata[strcase.ToSnake("Pkg_id")] = dtu_specinfo.Pkg_id
-			orm.Eloquent.Model(batterymanage.Dtu_specinfo{}).Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).Updates(gormdata)
-		}
-		var battery_list batterymanage.Battery_list
-		battery_list.Dtu_uptime=bms_specinfo.Dtu_uptime
-		battery_list.Pkg_id=pkg_id
-		battery_list.Dtu_id=msg.DtuID
-		battery_list.Pkg_count=uint8(reg[20]>>8)
-		battery_list.Pkg_type=uint8(reg[20])
-		battery_list.Pkg_capacity=uint16(reg[21])
-		battery_list.Pkg_nominalVoltage=uint16(reg[22])
-		battery_list.Pkg_onOffLineStatus = 1
-		var temp1 batterymanage.Battery_list
-		if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Error;err != nil {
-			orm.Eloquent.Create(&battery_list)
-		}else if pkg_id != ""{
-			gormdata := make(map[string]interface{})
-			gormdata[strcase.ToSnake("Dtu_uptime")] = battery_list.Dtu_uptime
-			gormdata[strcase.ToSnake("Pkg_id")] = battery_list.Pkg_id
-			gormdata[strcase.ToSnake("Dtu_id")] = battery_list.Dtu_id
-			gormdata[strcase.ToSnake("Pkg_count")] = battery_list.Pkg_count
-			gormdata[strcase.ToSnake("Pkg_type")] = battery_list.Pkg_type
-			gormdata[strcase.ToSnake("Pkg_capacity")] = battery_list.Pkg_capacity
-			gormdata[strcase.ToSnake("Pkg_nominalVoltage")] = battery_list.Pkg_nominalVoltage
-			gormdata[strcase.ToSnake("Pkg_onOffLineStatus")] = battery_list.Pkg_onOffLineStatus
-			orm.Eloquent.Model(batterymanage.Battery_list{}).Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).Updates(gormdata)
+			gormdata[strcase.ToSnake("Bind_uptime")] = dtuPkg_list.Bind_uptime
+			gormdata[strcase.ToSnake("Dtu_id")] = dtuPkg_list.Dtu_id
+			if dtu_specinfo.Dtu_bmsBindStatus == 0 {
+				gormdata[strcase.ToSnake("Pkg_id")] = ""
+				Dtu_Pkg_map[msg.DtuID] = ""
+			}else {
+				gormdata[strcase.ToSnake("Pkg_id")] = dtuPkg_list.Pkg_id
+				Dtu_Pkg_map[msg.DtuID] = dtuPkg_list.Pkg_id
+			}
+
+			orm.Eloquent.Model(batterymanage.DtuPkg_list{}).Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).Updates(gormdata)
 		}
 	}
 }
@@ -317,14 +260,24 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	regTemp, _ = sliceUin16Tobyte(reg[34:44])
 	dtu_imei:= string(regTemp)
 	if dtu_id != msg.DtuID {
+		//需要加上错误检测
 		fmt.Println("dtu id is not aliyun id")
 	}else {
-		Dtu_BMS_map[dtu_id]="0"
+		Dtu_Pkg_map[dtu_id]="0"
 	}
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
+	if len(pkg_id)<5{
+		res := Dtu_BMS_map_Init(msg)
+		if res != true {
+			pkg_id=""
+		}else {
+			pkg_id=Dtu_Pkg_map[msg.DtuID]
+		}
+	}
+
 	var dtu_specinfo batterymanage.Dtu_specinfo
 	dtu_specinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	dtu_specinfo.Dtu_id= dtu_id
-	dtu_specinfo.Pkg_id= "0"
 	dtu_specinfo.Dtu_type= uint8(reg[10]>>8)
 	dtu_specinfo.Dtu_setupType= uint8(reg[10])
 	dtu_specinfo.Dtu_coreVer=uint16(reg[11])
@@ -337,50 +290,39 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_specinfo.Dtu_simIccid=dtu_sim_iccid
 	dtu_specinfo.Dtu_imei=dtu_imei
 	dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[44])
-	var temp batterymanage.Dtu_specinfo
-	if err:=orm.Eloquent.Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).First(&temp).Error;err != nil {
-		orm.Eloquent.Create(&dtu_specinfo)
+	if dtu_specinfo.Dtu_bmsBindStatus == 0 {
+		dtu_specinfo.Pkg_id= ""
+		Dtu_Pkg_map[msg.DtuID] = ""
 	}else {
-		gormdata := make(map[string]interface{})
-		gormdata[strcase.ToSnake("Dtu_uptime")] = dtu_specinfo.Dtu_uptime
-		gormdata[strcase.ToSnake("Dtu_id")] = dtu_specinfo.Dtu_id
-		gormdata[strcase.ToSnake("Pkg_id")] = dtu_specinfo.Pkg_id
-		gormdata[strcase.ToSnake("Dtu_type")] = dtu_specinfo.Dtu_type
-		gormdata[strcase.ToSnake("Dtu_setupType")] = dtu_specinfo.Dtu_setupType
-		gormdata[strcase.ToSnake("Dtu_coreVer")] = dtu_specinfo.Dtu_coreVer
-		gormdata[strcase.ToSnake("Dtu_hardVer")] = dtu_specinfo.Dtu_hardVer
-		gormdata[strcase.ToSnake("Dtu_softVer")] = dtu_specinfo.Dtu_softVer
-		gormdata[strcase.ToSnake("Dtu_protocolVer")] = dtu_specinfo.Dtu_protocolVer
-		gormdata[strcase.ToSnake("Dtu_devID")] = dtu_specinfo.Dtu_devID
-		gormdata[strcase.ToSnake("Dtu_simIccid")] = dtu_specinfo.Dtu_simIccid
-		gormdata[strcase.ToSnake("Dtu_imei")] = dtu_specinfo.Dtu_imei
-		gormdata[strcase.ToSnake("Dtu_bmsBindStatus")] = dtu_specinfo.Dtu_bmsBindStatus
-		orm.Eloquent.Model(batterymanage.Dtu_specinfo{}).Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).Updates(gormdata)
+		dtu_specinfo.Pkg_id= pkg_id
 	}
-	var battery_list batterymanage.Battery_list
-	battery_list.Dtu_uptime=dtu_specinfo.Dtu_uptime
-	battery_list.Dtu_id=msg.DtuID
-	battery_list.Pkg_onOffLineStatus = dtu_specinfo.Dtu_bmsBindStatus
-
-	var temp1 batterymanage.Battery_list
-	if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).First(&temp1).Error;err != nil {
-		//orm.Eloquent.Create(&battery_list)
+	orm.Eloquent.Create(&dtu_specinfo)
+	var dtuPkg_list batterymanage.DtuPkg_list
+	dtuPkg_list.Bind_uptime = dtu_specinfo.Dtu_uptime
+	dtuPkg_list.Dtu_id = dtu_id
+	dtuPkg_list.Pkg_id = dtu_specinfo.Pkg_id
+	var temp batterymanage.DtuPkg_list
+	if err:=orm.Eloquent.Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).First(&temp).Error;err != nil {
+		orm.Eloquent.Create(&dtuPkg_list)
 	}else {
 		gormdata := make(map[string]interface{})
-		gormdata[strcase.ToSnake("Dtu_uptime")]=battery_list.Dtu_uptime
-		gormdata[strcase.ToSnake("Dtu_id")]=battery_list.Dtu_id
-		gormdata[strcase.ToSnake("Pkg_onOffLineStatus")]=battery_list.Pkg_onOffLineStatus
-		orm.Eloquent.Model(batterymanage.Battery_list{}).Where(&batterymanage.Battery_list{Dtu_id: msg.DtuID}).Updates(gormdata)
+		gormdata[strcase.ToSnake("Bind_uptime")] = dtuPkg_list.Bind_uptime
+		gormdata[strcase.ToSnake("Dtu_id")] = dtuPkg_list.Dtu_id
+		if dtu_specinfo.Dtu_bmsBindStatus == 0 {
+			Dtu_Pkg_map[msg.DtuID] = ""
+		}
+		gormdata[strcase.ToSnake("Pkg_id")] = dtuPkg_list.Pkg_id
+		orm.Eloquent.Model(batterymanage.DtuPkg_list{}).Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).Updates(gormdata)
 	}
 }
 func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			pkg_id=""
 		}else {
-			pkg_id=Dtu_BMS_map[msg.DtuID]
+			pkg_id=Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var bms_statusinfo batterymanage.Bms_statusinfo
@@ -441,66 +383,17 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_statusinfo.Dtu_errNbr=uint8(reg[23])
 		dtu_statusinfo.Dtu_errCode=uint16(reg[24])
 		orm.Eloquent.Create(&dtu_statusinfo)
-		var battery_list batterymanage.Battery_list
-		battery_list.Dtu_uptime=bms_statusinfo.Dtu_uptime
-		battery_list.Pkg_id=pkg_id
-		battery_list.Dtu_id=msg.DtuID
-		battery_list.Bms_soc=bms_statusinfo.Bms_soc
-		battery_list.Bms_chargeStatus=bms_statusinfo.Bms_chargeStatus
-		battery_list.Dtu_latitudeType = dtu_statusinfo.Dtu_latitudeType
-		battery_list.Dtu_longitudeType = dtu_statusinfo.Dtu_longitudeType
-		battery_list.Dtu_latitude =  dtu_statusinfo.Dtu_latitude
-		battery_list.Dtu_longitude = dtu_statusinfo.Dtu_longitude
-		battery_list.Dtu_csq = dtu_statusinfo.Dtu_csq
-		battery_list.Dtu_locateMode = dtu_statusinfo.Dtu_locateMode
-		var temp1 batterymanage.Battery_list
-		if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Error;err != nil {
-			//orm.Eloquent.Create(&battery_list)
-		}else if pkg_id != "" {
-			gormdata := make(map[string]interface{})
-			gormdata[strcase.ToSnake("Dtu_uptime")] = battery_list.Dtu_uptime
-			gormdata[strcase.ToSnake("Pkg_id")] = battery_list.Pkg_id
-			gormdata[strcase.ToSnake("Dtu_id")] = battery_list.Dtu_id
-			gormdata[strcase.ToSnake("Bms_soc")] = battery_list.Bms_soc
-			gormdata[strcase.ToSnake("Bms_chargeStatus")] = battery_list.Bms_chargeStatus
-			gormdata[strcase.ToSnake("Dtu_latitudeType")] = battery_list.Dtu_latitudeType
-			gormdata[strcase.ToSnake("Dtu_longitudeType")] = battery_list.Dtu_longitudeType
-			gormdata[strcase.ToSnake("Dtu_latitude")] = battery_list.Dtu_latitude
-			gormdata[strcase.ToSnake("Dtu_longitude")] = battery_list.Dtu_longitude
-			gormdata[strcase.ToSnake("Dtu_csq")] = battery_list.Dtu_csq
-			gormdata[strcase.ToSnake("Dtu_locateMode")] = battery_list.Dtu_locateMode
-			orm.Eloquent.Model(batterymanage.Battery_list{}).Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).Updates(gormdata)
-		}
-	}else {
-		var battery_list batterymanage.Battery_list
-		battery_list.Dtu_uptime=bms_statusinfo.Dtu_uptime
-		battery_list.Pkg_id=pkg_id
-		battery_list.Dtu_id=msg.DtuID
-		battery_list.Bms_soc=bms_statusinfo.Bms_soc
-		battery_list.Bms_chargeStatus=bms_statusinfo.Bms_chargeStatus
-		var temp1 batterymanage.Battery_list
-		if err:=orm.Eloquent.Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).First(&temp1).Error;err != nil {
-			//orm.Eloquent.Create(&battery_list)
-		}else if pkg_id != ""{
-			gormdata := make(map[string]interface{})
-			gormdata[strcase.ToSnake("Dtu_uptime")] = battery_list.Dtu_uptime
-			gormdata[strcase.ToSnake("Pkg_id")] = battery_list.Pkg_id
-			gormdata[strcase.ToSnake("Dtu_id")] = battery_list.Dtu_id
-			gormdata[strcase.ToSnake("Bms_soc")] = battery_list.Bms_soc
-			gormdata[strcase.ToSnake("Bms_chargeStatus")] = battery_list.Bms_chargeStatus
-			orm.Eloquent.Model(batterymanage.Battery_list{}).Where(&batterymanage.Battery_list{Pkg_id: pkg_id}).Updates(gormdata)
-		}
 	}
 }
 func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res:= Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var dtu_statusinfo batterymanage.Dtu_statusinfo
@@ -539,14 +432,14 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	orm.Eloquent.Create(&dtu_statusinfo)
 }
 func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var dtu_statusinfo batterymanage.Dtu_statusinfo
@@ -559,14 +452,14 @@ func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	orm.Eloquent.Create(&dtu_statusinfo)
 }
 func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var bms_cellinfo batterymanage.Bms_cellinfo
@@ -596,14 +489,14 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	orm.Eloquent.Create(&bms_cellinfo)
 }
 func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var bms_temperatureinfo batterymanage.Bms_temperatureinfo
@@ -619,14 +512,14 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	orm.Eloquent.Create(&bms_temperatureinfo)
 }
 func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var bms_historyinfo batterymanage.Bms_historyinfo
@@ -663,14 +556,14 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	}
 }
 func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	var bms_paraSetReg batterymanage.Bms_paraSetReg
@@ -809,14 +702,14 @@ func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	}
 }
 func modbusProcess30647(reg []uint16,reglen uint8,msg ModbusMessage)  {
-	pkg_id:= Dtu_BMS_map[msg.DtuID]
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
 	if pkg_id == ""{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
 			pkg_id=""
 		}else {
-			pkg_id= Dtu_BMS_map[msg.DtuID]
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
 	regTemp, _ := sliceUin16Tobyte(reg[4:])

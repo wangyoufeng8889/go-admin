@@ -19,6 +19,8 @@ type Dtu_specinfo struct {
 	Dtu_simIccid      string `json:"dtu_simIccid" gorm:"size:20;"`
 	Dtu_imei      string `json:"dtu_imei" gorm:"size:20;"`
 	Dtu_bmsBindStatus   uint8    `json:"dtu_bmsBindStatus" gorm:"Type：uint8"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Dtu_specinfo) TableName() string {

@@ -1,12 +1,7 @@
 package batterymanage
 
 
-import (
-	orm "go-admin/global"
-	"go-admin/models"
-	"go-admin/tools"
-	"time"
-)
+/*
 type Battery_list struct {
 	Battery_listId     int    `json:"battery_listId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
@@ -85,3 +80,5 @@ func (e *Battery_list) BatchDelete(id []int) (Result bool, err error) {
 	Result = true
 	return
 }
+
+ */

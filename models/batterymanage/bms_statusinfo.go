@@ -27,6 +27,8 @@ type Bms_statusinfo struct {
 	Bms_dischargeMosStatus   uint8    `json:"bms_dischargeMosStatus" gorm:"Type：uint8"`
 	Bms_otaBufStatus   uint8    `json:"bms_otaBufStatus" gorm:"Type：uint8"`
 	Bms_magneticCheck   uint8   `json:"bms_magneticCheck" gorm:"Type：uint8"`
+	DataScope  string `json:"dataScope" gorm:"-"`
+	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
 func (Bms_statusinfo) TableName() string {
