@@ -7,8 +7,8 @@ import (
 	"go-admin/tools"
 	"time"
 )
-type Bms_specinfo struct {
-	Bms_specinfoId     int    `json:"bms_specinfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
+type Bms_specInfo struct {
+	Bms_specInfoId     int    `json:"bms_specInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
@@ -26,16 +26,16 @@ type Bms_specinfo struct {
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
-func (Bms_specinfo) TableName() string {
+func (Bms_specInfo) TableName() string {
 	return "user_bms_specinfo"
 }
-func (e *Bms_specinfo) GetPage(pageSize int, pageIndex int) ([]Bms_specinfo, int, error) {
-	var doc []Bms_specinfo
+//电池列表
+func (e *Bms_specInfo) GetBms_specinfo(pageSize int, pageIndex int,is_oneList string) ([]Bms_specInfo,int, error) {
+	var doc []Bms_specInfo
 
 	table := orm.Eloquent.Select("*").Table(e.TableName())
-	if e.Bms_specinfoId != 0 {
-		//按照数据库格式
-		table = table.Where("bms_specinfo_id = ?", e.Bms_specinfoId)
+	if e.Bms_specInfoId != 0 {
+		table = table.Where("bms_spec_info_id = ?", e.Bms_specInfoId)
 	}
 	if e.Pkg_id != "" {
 		table = table.Where("pkg_id = ?", e.Pkg_id)
@@ -45,7 +45,6 @@ func (e *Bms_specinfo) GetPage(pageSize int, pageIndex int) ([]Bms_specinfo, int
 	if e.Dtu_id != "" {
 		table = table.Where("dtu_id = ?", e.Dtu_id)
 	}
-
 	// 数据权限控制
 	dataPermission := new(models.DataPermission)
 	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
@@ -54,15 +53,21 @@ func (e *Bms_specinfo) GetPage(pageSize int, pageIndex int) ([]Bms_specinfo, int
 		return nil, 0, err
 	}
 	var count int
-
-	if err := table.Order("bms_specinfo_id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error; err != nil {
-		return nil, 0, err
+	if is_oneList == "YES" {
+		if err := table.Order("dtu_uptime").First(&doc).Error; err != nil {
+			return nil, 0, err
+		}
+		table.Where("`deleted_at` IS NULL").Count(&count)
+	}else{
+		if err := table.Order("bms_spec_info_id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error; err != nil {
+			return nil, 0, err
+		}
+		table.Where("`deleted_at` IS NULL").Count(&count)
 	}
-	table.Where("`deleted_at` IS NULL").Count(&count)
 	return doc, count, nil
 }
-func (e *Bms_specinfo) BatchDelete(id []int) (Result bool, err error) {
-	if err = orm.Eloquent.Table(e.TableName()).Where("bms_specinfo_id in (?)", id).Delete(&Bms_specinfo{}).Error; err != nil {
+func (e *Bms_specInfo) BatchDelete(id []int) (Result bool, err error) {
+	if err = orm.Eloquent.Table(e.TableName()).Where("bms_spec_info_id in (?)", id).Delete(&Bms_specInfo{}).Error; err != nil {
 		return
 	}
 	Result = true

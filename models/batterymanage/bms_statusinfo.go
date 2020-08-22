@@ -1,11 +1,13 @@
 package batterymanage
 
 import (
-"go-admin/models"
-"time"
+	orm "go-admin/global"
+	"go-admin/models"
+	"go-admin/tools"
+	"time"
 )
-type Bms_statusinfo struct {
-	Bms_statusinfoId     int    `json:"bms_statusinfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
+type Bms_statusInfo struct {
+	Bms_statusInfoId     int    `json:"bms_statusInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
@@ -31,6 +33,43 @@ type Bms_statusinfo struct {
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
-func (Bms_statusinfo) TableName() string {
+func (Bms_statusInfo) TableName() string {
 	return "user_bms_statusinfo"
+}
+func (e *Bms_statusInfo) GetBms_statusinfo(startdate time.Time, enddate time.Time,is_oneList string) ([]Bms_statusInfo,int, error) {
+	var doc []Bms_statusInfo
+
+	table := orm.Eloquent.Select("*").Table(e.TableName())
+	if e.Bms_statusInfoId != 0 {
+		table = table.Where("bms_status_info_id = ?", e.Bms_statusInfoId)
+	}
+	if e.Pkg_id != "" {
+		table = table.Where("pkg_id = ?", e.Pkg_id)
+	}else {
+		table = table.Not("pkg_id = ?", "0")
+	}
+	if e.Dtu_id != "" {
+		table = table.Where("dtu_id = ?", e.Dtu_id)
+	}
+	table = table.Where("dtu_uptime BETWEEN ? AND ?",startdate,enddate)
+	// 数据权限控制
+	dataPermission := new(models.DataPermission)
+	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
+	table, err := dataPermission.GetDataScope(e.TableName(), table)
+	if err != nil {
+		return nil, 0, err
+	}
+	var count int
+	if is_oneList == "YES" {
+		if err := table.Order("dtu_uptime").First(&doc).Error; err != nil {
+			return nil, 0, err
+		}
+		table.Where("`deleted_at` IS NULL").Count(&count)
+	}else{
+		if err := table.Order("dtu_uptime").Find(&doc).Error; err != nil {
+			return nil, 0, err
+		}
+		table.Where("`deleted_at` IS NULL").Count(&count)
+	}
+	return doc, count, nil
 }

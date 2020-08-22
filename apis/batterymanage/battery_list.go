@@ -6,9 +6,9 @@ import (
 	"go-admin/tools"
 	"go-admin/tools/app"
 )
-
+//电池列表
 func GetBatteryList(c *gin.Context) {
-	var data batterymanage.Bms_specinfo
+	var data batterymanage.Bms_specInfo
 	var err error
 	var pageSize = 10
 	var pageIndex = 1
@@ -21,14 +21,16 @@ func GetBatteryList(c *gin.Context) {
 		pageIndex = tools.StrToInt(err, index)
 	}
 	//按照json格式
-	id := c.Request.FormValue("bms_specinfoId")
-	data.Bms_specinfoId, _ = tools.StringToInt(id)
+	id := c.Request.FormValue("bms_specInfoId")
+	data.Bms_specInfoId, _ = tools.StringToInt(id)
 
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 
+	var is_oneList string = c.Request.FormValue("is_oneList")
+
 	data.DataScope = tools.GetUserIdStr(c)
-	result, count, err := data.GetPage(pageSize, pageIndex)
+	result, count, err := data.GetBms_specinfo(pageSize, pageIndex,is_oneList)
 	tools.HasError(err, "", -1)
 	app.PageOK(c, result, count, pageIndex, pageSize, "")
 }
@@ -40,9 +42,9 @@ func GetBatteryList(c *gin.Context) {
 // @Success 500 {string} string	"{"code": 500, "message": "删除失败"}"
 // @Router /api/v1/post/{postId} [delete]
 func DelOneBatteryList(c *gin.Context) {
-	var data batterymanage.Bms_specinfo
+	var data batterymanage.Bms_specInfo
 	data.UpdateBy = tools.GetUserIdStr(c)
-	ids := tools.IdsStrToIdsIntGroup("bms_specinfoId", c)
+	ids := tools.IdsStrToIdsIntGroup("bms_specInfoId", c)
 	result, err := data.BatchDelete(ids)
 	tools.HasError(err, "删除失败", 500)
 	app.OK(c, result, "删除成功")

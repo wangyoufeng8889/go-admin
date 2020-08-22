@@ -42,7 +42,9 @@ func Test_BDToGCJToWGS(t *testing.T) {
 	// 火星转国际
 	latW1, lngW1 := GCJ02ToWGS84(latG1, lngG1)
 	fmt.Println("GCJ02ToWGS84:", latW1, lngW1)
-	//
+	//j纠偏错误
+	latW1 = 30.27514936729205
+	lngW1 = 119.10409323956925
 	latG1, lngG1 = WGS84ToGCJ02(latW1, lngW1)
 	fmt.Println("WGS84ToGCJ02:", latG1, lngG1)
 

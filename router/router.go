@@ -40,17 +40,33 @@ func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddle
 	// {{认证路由自动补充在此处请勿删除}}
 	registerUserBatterylistRouter(bm1, authMiddleware)
 	registerUserBatterydetailRouter(bm1, authMiddleware)
+	registerUserDTUlistRouter(bm1, authMiddleware)
+	registerUserBDTUdetailRouter(bm1, authMiddleware)
 }
 func registerUserBatterylistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/batterylist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		battertlist.GET("", batterymanage.GetBatteryList)
-		battertlist.DELETE("/:battery_listId", batterymanage.DelOneBatteryList)
+		battertlist.DELETE("/:bms_specInfoId", batterymanage.DelOneBatteryList)
 	}
 }
 func registerUserBatterydetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/batterydetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		battertlist.GET("/dtu_statusinfo", batterymanage.GetBatteryDetail_dtu_statusinfo)
+		battertlist.GET("/bms_statusinfo", batterymanage.GetBatteryDetail_bms_statusinfo)
+	}
+}
+func registerUserDTUlistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	battertlist := user.Group("/dtulist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		battertlist.GET("", batterymanage.GetDTUPKGList)
+		battertlist.DELETE("/:dtuPkg_listId", batterymanage.DelOneDTUPKGList)
+	}
+}
+func registerUserBDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	battertlist := user.Group("/dtudetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		battertlist.GET("/dtu_statusinfo", batterymanage.GetDTUDetail_dtu_statusinfo)
+		battertlist.GET("/dtu_specinfo", batterymanage.GetDTUDetail_dtu_specinfo)
 	}
 }

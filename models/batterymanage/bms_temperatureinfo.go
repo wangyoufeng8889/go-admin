@@ -3,8 +3,8 @@ import (
 	"go-admin/models"
 	"time"
 )
-type Bms_temperatureinfo struct {
-	Bms_temperatureinfoId     int    `json:"bms_temperatureinfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
+type Bms_temperatureInfo struct {
+	Bms_temperatureInfoId     int    `json:"bms_temperatureInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
@@ -18,6 +18,6 @@ type Bms_temperatureinfo struct {
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
-func (Bms_temperatureinfo) TableName() string {
+func (Bms_temperatureInfo) TableName() string {
 	return "user_bms_temperatureinfo"
 }

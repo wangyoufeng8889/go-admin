@@ -98,7 +98,7 @@ func AutoMigrate(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	err = db.AutoMigrate(new(batterymanage.Bms_statusinfo)).Error
+	err = db.AutoMigrate(new(batterymanage.Bms_statusInfo)).Error
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func AutoMigrate(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	err = db.AutoMigrate(new(batterymanage.Bms_specinfo)).Error
+	err = db.AutoMigrate(new(batterymanage.Bms_specInfo)).Error
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func AutoMigrate(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	err = db.AutoMigrate(new(batterymanage.Bms_temperatureinfo)).Error
+	err = db.AutoMigrate(new(batterymanage.Bms_temperatureInfo)).Error
 	if err != nil {
 		return err
 	}
@@ -126,11 +126,11 @@ func AutoMigrate(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	err = db.AutoMigrate(new(batterymanage.Dtu_specinfo)).Error
+	err = db.AutoMigrate(new(batterymanage.Dtu_specInfo)).Error
 	if err != nil {
 		return err
 	}
-	err = db.AutoMigrate(new(batterymanage.Dtu_statusinfo)).Error
+	err = db.AutoMigrate(new(batterymanage.Dtu_statusInfo)).Error
 	if err != nil {
 		return err
 	}

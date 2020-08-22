@@ -8,7 +8,6 @@ import (
 	"go-admin/tools/app"
 	"time"
 )
-var TIME_LAYOUT = "2006-01-02 15:04:05"
 // @Summary 电池列表数据
 // @Description 获取JSON
 // @Tags 岗位
@@ -19,8 +18,8 @@ var TIME_LAYOUT = "2006-01-02 15:04:05"
 // @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
 // @Router /api/v1/post [get]
 // @Security Bearer
-func GetBatteryDetail_bms_statusinfo(c *gin.Context) {
-	var data batterymanage.Bms_statusInfo
+func GetDTUDetail_dtu_statusinfo(c *gin.Context) {
+	var data batterymanage.Dtu_statusInfo
 	var err error
 	var startdate = time.Now().AddDate(0,0,-1)
 	var enddate = time.Now()
@@ -48,15 +47,34 @@ func GetBatteryDetail_bms_statusinfo(c *gin.Context) {
 	}
 
 	id := c.Request.FormValue("dtu_statusInfoId")
-	data.Bms_statusInfoId, _ = tools.StringToInt(id)
+	data.Dtu_statusInfoId, _ = tools.StringToInt(id)
 
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 	var is_oneList string = c.Request.FormValue("is_oneList")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result,count, err := data.GetBms_statusinfo(startdate, enddate,is_oneList)
+	result,count, err := data.Getdtu_statusinfo(startdate, enddate,is_oneList)
 	fmt.Println(count)
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }
+
+func GetDTUDetail_dtu_specinfo(c *gin.Context) {
+	var data batterymanage.Dtu_specInfo
+	var err error
+	//2006-01-02 15:04:05.9999999 +0800
+	id := c.Request.FormValue("dtu_statusInfoId")
+	data.Dtu_specInfoId, _ = tools.StringToInt(id)
+
+	data.Dtu_id = c.Request.FormValue("dtu_id")
+	data.Pkg_id = c.Request.FormValue("pkg_id")
+	var is_oneList string = c.Request.FormValue("is_oneList")
+
+	data.DataScope = tools.GetUserIdStr(c)
+	result,count, err := data.Getdtu_specinfo(is_oneList)
+	fmt.Println(count)
+	tools.HasError(err, "", -1)
+	app.OK(c, result, "")
+}
+

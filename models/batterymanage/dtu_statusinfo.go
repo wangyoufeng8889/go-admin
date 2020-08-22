@@ -6,7 +6,7 @@ import (
 	"go-admin/tools"
 	"time"
 )
-type Dtu_statusinfo struct {
+type Dtu_statusInfo struct {
 	Dtu_statusInfoId     int    `json:"dtu_statusInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
@@ -29,15 +29,15 @@ type Dtu_statusinfo struct {
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
-func (Dtu_statusinfo) TableName() string {
+func (Dtu_statusInfo) TableName() string {
 	return "user_dtu_statusinfo"
 }
-func (e *Dtu_statusinfo) Getdtu_statusinfo(startdate time.Time, enddate time.Time) ([]Dtu_statusinfo,int, error) {
-	var doc []Dtu_statusinfo
+func (e *Dtu_statusInfo) Getdtu_statusinfo(startdate time.Time, enddate time.Time,is_oneList string) ([]Dtu_statusInfo,int, error) {
+	var doc []Dtu_statusInfo
 
 	table := orm.Eloquent.Select("*").Table(e.TableName())
 	if e.Dtu_statusInfoId != 0 {
-		table = table.Where("dtu_statusInfoId = ?", e.Dtu_statusInfoId)
+		table = table.Where("dtu_status_info_id = ?", e.Dtu_statusInfoId)
 	}
 	if e.Pkg_id != "" {
 		table = table.Where("pkg_id = ?", e.Pkg_id)
@@ -56,10 +56,16 @@ func (e *Dtu_statusinfo) Getdtu_statusinfo(startdate time.Time, enddate time.Tim
 		return nil, 0, err
 	}
 	var count int
-
-	if err := table.Order("dtu_uptime").Find(&doc).Error; err != nil {
-		return nil, 0, err
+	if is_oneList == "YES" {
+		if err := table.Order("dtu_uptime").First(&doc).Error; err != nil {
+			return nil, 0, err
+		}
+		table.Where("`deleted_at` IS NULL").Count(&count)
+	}else{
+		if err := table.Order("dtu_uptime").Find(&doc).Error; err != nil {
+			return nil, 0, err
+		}
+		table.Where("`deleted_at` IS NULL").Count(&count)
 	}
-	table.Where("`deleted_at` IS NULL").Count(&count)
 	return doc, count, nil
 }

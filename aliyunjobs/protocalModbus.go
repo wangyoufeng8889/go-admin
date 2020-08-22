@@ -137,12 +137,12 @@ func sliceUin16Tobyte(sl_in []uint16)(sl_out []byte,err error)  {
 func Dtu_BMS_map_Init(msg ModbusMessage)(bool)  {
 	var dtuPkg_list batterymanage.DtuPkg_list
 
-	orm.Eloquent.Where(&batterymanage.Dtu_specinfo{Dtu_id: msg.DtuID}).First(&dtuPkg_list)
+	orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: msg.DtuID}).First(&dtuPkg_list)
 	if len(dtuPkg_list.Pkg_id)>0 {
 		Dtu_Pkg_map[msg.DtuID] = dtuPkg_list.Pkg_id
 		return false
 	}else{
-		Dtu_Pkg_map[msg.DtuID] = ""
+		Dtu_Pkg_map[msg.DtuID] = " "
 		return false
 	}
 }
@@ -152,7 +152,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	regTemp, _ = sliceUin16Tobyte(reg[10:20])
 	bms_id:= string(regTemp)
 
-	var bms_specinfo batterymanage.Bms_specinfo
+	var bms_specinfo batterymanage.Bms_specInfo
 	bms_specinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
 	bms_specinfo.Pkg_id=pkg_id
 	bms_specinfo.Dtu_id=msg.DtuID
@@ -167,11 +167,11 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_specinfo.Pkg_manufactureDate=time.Date(manufactureyear,time.Month(uint8(reg[24]>>8)),int(uint8(reg[24])),0,0,0,0,loc)
 	bms_specinfo.Bms_hardVer=uint8(reg[25]>>8)
 	bms_specinfo.Bms_softVer=uint8(reg[25])
-	data1 := reg[26]/100
-	data2 := reg[26]%100
+	data1 := reg[26]/0xFF
+	data2 := reg[26]%0xFF
 	bms_specinfo.Bms_protocolVer =  fmt.Sprintf("%d.%02d",data1,data2)
-	var temp batterymanage.Bms_specinfo
-	if err:=orm.Eloquent.Where(&batterymanage.Bms_specinfo{Pkg_id: pkg_id}).First(&temp).Error;err != nil {
+	var temp batterymanage.Bms_specInfo
+	if err:=orm.Eloquent.Where(&batterymanage.Bms_specInfo{Pkg_id: pkg_id}).First(&temp).Error;err != nil {
 		orm.Eloquent.Create(&bms_specinfo)
 	}else {
 
@@ -189,7 +189,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		gormdata[strcase.ToSnake("Bms_hardVer")] = bms_specinfo.Bms_hardVer
 		gormdata[strcase.ToSnake("Bms_softVer")] = bms_specinfo.Bms_softVer
 		gormdata[strcase.ToSnake("Bms_protocolVer")] = bms_specinfo.Bms_protocolVer
-		orm.Eloquent.Model(batterymanage.Bms_specinfo{}).Where(&batterymanage.Bms_specinfo{Pkg_id: pkg_id}).Updates(gormdata)
+		orm.Eloquent.Model(batterymanage.Bms_specInfo{}).Where(&batterymanage.Bms_specInfo{Pkg_id: pkg_id}).Updates(gormdata)
 	}
 	if reglen == 72 {
 		regTemp, _ = sliceUin16Tobyte(reg[27:37])
@@ -206,7 +206,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			Dtu_Pkg_map[dtu_id]=pkg_id
 		}
 
-		var dtu_specinfo batterymanage.Dtu_specinfo
+		var dtu_specinfo batterymanage.Dtu_specInfo
 		dtu_specinfo.Dtu_uptime=bms_specinfo.Dtu_uptime
 		dtu_specinfo.Dtu_id= dtu_id
 		dtu_specinfo.Pkg_id= pkg_id
@@ -240,7 +240,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			gormdata[strcase.ToSnake("Dtu_id")] = dtuPkg_list.Dtu_id
 			if dtu_specinfo.Dtu_bmsBindStatus == 0 {
 				gormdata[strcase.ToSnake("Pkg_id")] = ""
-				Dtu_Pkg_map[msg.DtuID] = ""
+				Dtu_Pkg_map[msg.DtuID] = " "
 			}else {
 				gormdata[strcase.ToSnake("Pkg_id")] = dtuPkg_list.Pkg_id
 				Dtu_Pkg_map[msg.DtuID] = dtuPkg_list.Pkg_id
@@ -275,7 +275,7 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		}
 	}
 
-	var dtu_specinfo batterymanage.Dtu_specinfo
+	var dtu_specinfo batterymanage.Dtu_specInfo
 	dtu_specinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	dtu_specinfo.Dtu_id= dtu_id
 	dtu_specinfo.Dtu_type= uint8(reg[10]>>8)
@@ -292,7 +292,7 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[44])
 	if dtu_specinfo.Dtu_bmsBindStatus == 0 {
 		dtu_specinfo.Pkg_id= ""
-		Dtu_Pkg_map[msg.DtuID] = ""
+		Dtu_Pkg_map[msg.DtuID] = " "
 	}else {
 		dtu_specinfo.Pkg_id= pkg_id
 	}
@@ -309,7 +309,7 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		gormdata[strcase.ToSnake("Bind_uptime")] = dtuPkg_list.Bind_uptime
 		gormdata[strcase.ToSnake("Dtu_id")] = dtuPkg_list.Dtu_id
 		if dtu_specinfo.Dtu_bmsBindStatus == 0 {
-			Dtu_Pkg_map[msg.DtuID] = ""
+			Dtu_Pkg_map[msg.DtuID] = " "
 		}
 		gormdata[strcase.ToSnake("Pkg_id")] = dtuPkg_list.Pkg_id
 		orm.Eloquent.Model(batterymanage.DtuPkg_list{}).Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).Updates(gormdata)
@@ -325,7 +325,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			pkg_id=Dtu_Pkg_map[msg.DtuID]
 		}
 	}
-	var bms_statusinfo batterymanage.Bms_statusinfo
+	var bms_statusinfo batterymanage.Bms_statusInfo
 	bms_statusinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	bms_statusinfo.Pkg_id= pkg_id
 	bms_statusinfo.Dtu_id=msg.DtuID
@@ -349,7 +349,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfo.Bms_magneticCheck=uint8(reg[12])
 	orm.Eloquent.Create(&bms_statusinfo)
 	if reglen == 25 {
-		var dtu_statusinfo batterymanage.Dtu_statusinfo
+		var dtu_statusinfo batterymanage.Dtu_statusInfo
 		dtu_statusinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
 		dtu_statusinfo.Pkg_id=pkg_id
 		dtu_statusinfo.Dtu_id=msg.DtuID
@@ -387,7 +387,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res:= Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
@@ -396,7 +396,7 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
-	var dtu_statusinfo batterymanage.Dtu_statusinfo
+	var dtu_statusinfo batterymanage.Dtu_statusInfo
 	dtu_statusinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
 	dtu_statusinfo.Pkg_id=pkg_id
 	dtu_statusinfo.Dtu_id=msg.DtuID
@@ -433,7 +433,7 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
@@ -442,7 +442,7 @@ func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
-	var dtu_statusinfo batterymanage.Dtu_statusinfo
+	var dtu_statusinfo batterymanage.Dtu_statusInfo
 	dtu_statusinfo.Dtu_uptime = time.Unix(msg.Timestamp/1000, 0)
 	dtu_statusinfo.Pkg_id=pkg_id
 	dtu_statusinfo.Dtu_id=msg.DtuID
@@ -453,7 +453,7 @@ func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
@@ -490,7 +490,7 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
@@ -499,7 +499,7 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
-	var bms_temperatureinfo batterymanage.Bms_temperatureinfo
+	var bms_temperatureinfo batterymanage.Bms_temperatureInfo
 	bms_temperatureinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	bms_temperatureinfo.Pkg_id= pkg_id
 	bms_temperatureinfo.Dtu_id=msg.DtuID
@@ -513,7 +513,7 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
@@ -557,7 +557,7 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
@@ -703,7 +703,7 @@ func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 }
 func modbusProcess30647(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	pkg_id:= Dtu_Pkg_map[msg.DtuID]
-	if pkg_id == ""{
+	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
 			fmt.Println("find no bmsID")
