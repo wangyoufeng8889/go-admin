@@ -6,7 +6,7 @@ import (
 type Bms_temperatureInfo struct {
 	Bms_temperatureInfoId     int    `json:"bms_temperatureInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;"`
+	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;unique;not null;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
 	Bms_temperature1   uint8    `json:"bms_temperature1" gorm:"Type：uint8"`
 	Bms_temperature2   uint8    `json:"bms_temperature2" gorm:"Type：uint8"`

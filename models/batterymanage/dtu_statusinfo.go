@@ -10,7 +10,7 @@ type Dtu_statusInfo struct {
 	Dtu_statusInfoId     int    `json:"dtu_statusInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
-	Dtu_id      string `json:"dtu_id" gorm:"size:20;primary_key;"`
+	Dtu_id      string `json:"dtu_id" gorm:"size:20;primary_key;unique;not null;"`
 	Dtu_latitudeType   string    `json:"dtu_latitudeType" gorm:"Type：size:2"`
 	Dtu_longitudeType   string    `json:"dtu_longitudeType" gorm:"Type：size:2"`
 	Dtu_latitude   string    `json:"dtu_latitude" gorm:"Type：size:20"`
