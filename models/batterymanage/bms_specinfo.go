@@ -10,7 +10,7 @@ import (
 type Bms_specInfo struct {
 	Bms_specInfoId     int    `json:"bms_specInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
+	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
 	Bms_id      string `json:"bms_id" gorm:"size:20;"`
 	Pkg_count   uint8    `json:"pkg_count" gorm:"Type：uint8"`

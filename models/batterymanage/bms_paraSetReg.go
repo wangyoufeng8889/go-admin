@@ -7,7 +7,7 @@ import (
 type Bms_paraSetReg struct {
 	Bms_paraSetRegId     int    `json:"bms_paraSetRegId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
+	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
 	Bms_chargeMosCtr   uint8    `json:"bms_chargeMosCtr" gorm:"Type：uint8"`
 	Bms_dischargeMosCtr   uint8    `json:"bms_dischargeMosCtr" gorm:"Type：uint8"`

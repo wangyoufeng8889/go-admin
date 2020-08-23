@@ -142,7 +142,7 @@ func Dtu_BMS_map_Init(msg ModbusMessage)(bool)  {
 		Dtu_Pkg_map[msg.DtuID] = dtuPkg_list.Pkg_id
 		return false
 	}else{
-		Dtu_Pkg_map[msg.DtuID] = " "
+		//Dtu_Pkg_map[msg.DtuID] = ""
 		return false
 	}
 }

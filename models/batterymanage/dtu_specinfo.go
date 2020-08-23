@@ -9,7 +9,7 @@ import (
 type Dtu_specInfo struct {
 	Dtu_specInfoId     int    `json:"dtu_specInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
+	Dtu_id      string `json:"dtu_id" gorm:"size:20;primary_key;"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
 	Dtu_type   uint8    `json:"dtu_type" gorm:"Type：uint8"`
 	Dtu_setupType   uint8    `json:"dtu_setupType" gorm:"Type：uint8"`

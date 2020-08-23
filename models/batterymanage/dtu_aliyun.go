@@ -9,7 +9,7 @@ import (
 type Dtu_aliyun struct {
 	Dtu_aliyunId     int    `json:"dtu_aliyunId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
+	Dtu_id      string `json:"dtu_id" gorm:"size:20;primary_key;"`
 	Dtu_aliyunStatus uint8    `json:"dtu_aliyunStatus" gorm:"Type：uint8"`
 	DataScope  string `json:"dataScope" gorm:"-"`
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`

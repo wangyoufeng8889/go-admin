@@ -6,7 +6,7 @@ import (
 type Dtu_paraSetReg struct {
 	Dtu_paraSetRegId     int    `json:"dtu_paraSetRegId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
+	Dtu_id      string `json:"dtu_id" gorm:"size:20;primary_key;"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
 	Dtu_pkgInfoReportPeriod   uint16    `json:"dtu_pkgInfoReportPeriod" gorm:"Type：uint16"`
 	Dtu_remoteLockCar   uint16    `json:"dtu_remoteLockCar" gorm:"Type：uint16"`

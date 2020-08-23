@@ -7,11 +7,14 @@ import (
 	"time"
 )
 //dtu为主，dtu pkg脱离后只保留 dtu
+/**
+pkg通过当前绑定的dtu_id查对应阿里云dtu对应的pkg是否当前的pkg
+ */
 type DtuPkg_list struct {
 	DtuPkg_listId     int    `json:"dtuPkg_listId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Bind_uptime time.Time  `json:"bind_uptime"`
-	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
-	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
+	Dtu_id      string `json:"dtu_id" gorm:"size:20;primary_key;"`
+	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key"`
 
 	DataScope  string `json:"dataScope" gorm:"-"`
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
