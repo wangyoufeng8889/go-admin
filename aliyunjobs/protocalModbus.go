@@ -500,7 +500,7 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
-	var bms_cellinfo batterymanage.Bms_cellinfo
+	var bms_cellinfo batterymanage.Bms_cellInfo
 	bms_cellinfo.Dtu_uptime= time.Unix(msg.Timestamp/1000, 0)
 	bms_cellinfo.Pkg_id= pkg_id
 	bms_cellinfo.Dtu_id=msg.DtuID
@@ -526,11 +526,11 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_cellinfo.Bms_cellVoltage20= uint16(reg[19])
 	//orm.Eloquent.Create(&bms_cellinfo)
 	bms_cellinfotemp:=bms_cellinfo
-	if err:=orm.Eloquent.Where(&batterymanage.Bms_cellinfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_cellinfotemp).Error;err != nil {
+	if err:=orm.Eloquent.Where(&batterymanage.Bms_cellInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_cellinfotemp).Error;err != nil {
 		fmt.Println(err)
 	}else {
 		bms_cellinfomap:=Struct2Map(bms_cellinfo,[]int{0,2,4,5,6,7,8,9,10,11,12,-3,-2,-1})
-		if err:=orm.Eloquent.Model(batterymanage.Bms_cellinfo{}).Where(&batterymanage.Bms_cellinfo{Pkg_id: pkg_id}).Updates(bms_cellinfomap).Error;err != nil {
+		if err:=orm.Eloquent.Model(batterymanage.Bms_cellInfo{}).Where(&batterymanage.Bms_cellInfo{Pkg_id: pkg_id}).Updates(bms_cellinfomap).Error;err != nil {
 			fmt.Println(err)
 		}
 	}
@@ -578,7 +578,7 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
 		}
 	}
-	var bms_historyinfo batterymanage.Bms_historyinfo
+	var bms_historyinfo batterymanage.Bms_historyInfo
 	bms_historyinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	bms_historyinfo.Pkg_id= pkg_id
 	bms_historyinfo.Dtu_id=msg.DtuID
@@ -592,11 +592,11 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_historyinfo.Pkg_nbrOfChargeDischarge= uint16(reg[4])
 	bms_historyinfo.Pkg_nbrofChargingCycle= uint16(reg[4])
 	bms_historyinfotemp:=bms_historyinfo
-	if err:=orm.Eloquent.Where(&batterymanage.Bms_historyinfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_historyinfotemp).Error;err != nil {
+	if err:=orm.Eloquent.Where(&batterymanage.Bms_historyInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_historyinfotemp).Error;err != nil {
 		fmt.Println(err)
 	}else {
 		bms_historyinfomap:=Struct2Map(bms_historyinfo,[]int{0,-3,-2,-1})
-		if err:=orm.Eloquent.Model(batterymanage.Bms_historyinfo{}).Where(&batterymanage.Bms_historyinfo{Pkg_id: pkg_id}).Updates(bms_historyinfomap).Error;err != nil {
+		if err:=orm.Eloquent.Model(batterymanage.Bms_historyInfo{}).Where(&batterymanage.Bms_historyInfo{Pkg_id: pkg_id}).Updates(bms_historyinfomap).Error;err != nil {
 			fmt.Println(err)
 		}
 	}

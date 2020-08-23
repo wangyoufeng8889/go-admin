@@ -1,10 +1,12 @@
 package batterymanage
+
 import (
 	"go-admin/models"
 	"time"
 )
-type Bms_cellInfo struct {
-	Bms_cellInfoId     int    `json:"bms_cellInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
+
+type Bms_cellInfoLog struct {
+	Bms_cellInfoLogId     int    `json:"bms_cellInfoLogId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;unique;not null;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
@@ -32,6 +34,6 @@ type Bms_cellInfo struct {
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
-func (Bms_cellInfo) TableName() string {
-	return "user_bms_cellinfo"
+func (Bms_cellInfoLog) TableName() string {
+	return "user_bms_cellinfolog"
 }

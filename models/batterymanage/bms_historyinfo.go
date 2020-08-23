@@ -3,8 +3,8 @@ import (
 	"go-admin/models"
 	"time"
 )
-type Bms_historyinfo struct {
-	Bms_historyinfoId     int    `json:"bms_historyinfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
+type Bms_historyInfo struct {
+	Bms_historyInfoId     int    `json:"bms_historyInfoId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
 	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;unique;not null;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
@@ -21,6 +21,6 @@ type Bms_historyinfo struct {
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
-func (Bms_historyinfo) TableName() string {
+func (Bms_historyInfo) TableName() string {
 	return "user_bms_historyinfo"
 }
