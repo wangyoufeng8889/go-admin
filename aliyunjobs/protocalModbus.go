@@ -233,7 +233,16 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_specinfo.Dtu_simIccid=dtu_sim_iccid
 		dtu_specinfo.Dtu_imei=dtu_imei
 		dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[71])
-		orm.Eloquent.Create(&dtu_specinfo)
+		//orm.Eloquent.Create(&dtu_specinfo)
+		dtu_specinfotemp:=dtu_specinfo
+		if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
+			fmt.Println(err)
+		}else {
+			dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-3,-2,-1})
+			if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
+				fmt.Println(err)
+			}
+		}
 		var dtuPkg_list batterymanage.DtuPkg_list
 		dtuPkg_list.Bind_uptime = dtu_specinfo.Dtu_uptime
 		dtuPkg_list.Dtu_id = dtu_id
@@ -390,7 +399,27 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_statusinfo.Dtu_errStatus=uint8(reg[23] >> 8)
 		dtu_statusinfo.Dtu_errNbr=uint8(reg[23])
 		dtu_statusinfo.Dtu_errCode=uint16(reg[24])
-		//orm.Eloquent.Create(&dtu_statusinfo)
+		dtu_statusinfolog := batterymanage.Dtu_statusInfoLog{Dtu_statusInfoLogId:dtu_statusinfo.Dtu_statusInfoId,
+			Dtu_uptime:dtu_statusinfo.Dtu_uptime,
+			Dtu_id:dtu_statusinfo.Dtu_id,
+			Pkg_id:dtu_statusinfo.Pkg_id,
+			Dtu_latitudeType:dtu_statusinfo.Dtu_latitudeType,
+			Dtu_longitudeType:dtu_statusinfo.Dtu_longitudeType,
+			Dtu_latitude:dtu_statusinfo.Dtu_latitude,
+			Dtu_longitude:dtu_statusinfo.Dtu_longitude,
+			Dtu_csq:dtu_statusinfo.Dtu_csq,
+			Dtu_locateMode:dtu_statusinfo.Dtu_locateMode,
+			Dtu_gpsSateCnt:dtu_statusinfo.Dtu_gpsSateCnt,
+			Dtu_speed:dtu_statusinfo.Dtu_speed,
+			Dtu_altitude:dtu_statusinfo.Dtu_altitude,
+			Dtu_pluginVoltage:dtu_statusinfo.Dtu_pluginVoltage,
+			Dtu_selfInVoltage:dtu_statusinfo.Dtu_selfInVoltage,
+			Dtu_errStatus:dtu_statusinfo.Dtu_errStatus,
+			Dtu_errNbr:dtu_statusinfo.Dtu_errNbr,
+			Dtu_errCode:dtu_statusinfo.Dtu_errCode}
+		if err:=orm.Eloquent.Create(&dtu_statusinfolog).Error;err!=nil{
+			fmt.Println(err)
+		}
 		dtu_statusinfotemp:=dtu_statusinfo
 		if err:=orm.Eloquent.Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_statusinfotemp).Error;err != nil {
 			fmt.Println(err)

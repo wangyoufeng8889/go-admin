@@ -69,3 +69,4 @@ func (e *Dtu_statusInfo) Getdtu_statusinfo(startdate time.Time, enddate time.Tim
 	}
 	return doc, count, nil
 }
+
