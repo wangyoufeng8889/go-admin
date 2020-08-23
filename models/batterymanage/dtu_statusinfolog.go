@@ -70,7 +70,8 @@ func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.T
 		return nil, 0, err
 	}
 	var count int
-	if err := table.Order("dtu_status_info_log_id").Find(&doc).Error; err != nil {
+	table = table.Order("dtu_status_info_log_id").Find(&doc)
+	if table.Error != nil {
 		return nil, 0, err
 	}
 	if e.Dtu_statusInfoLogId != 0 {
@@ -78,12 +79,14 @@ func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.T
 	}
 
 	if e.Pkg_id != "" {
-		table = table.Where("pkg_id = ?", e.Pkg_id)
+		table = table.Where("user_dtu_statusinfolog.pkg_id = ?", e.Pkg_id)
 	}
 	if e.Dtu_id != "" {
-		table = table.Where("dtu_id = ?", e.Dtu_id)
+		table = table.Where("user_dtu_statusinfolog.dtu_id = ?", e.Dtu_id)
 	}
-	table = table.Where("dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	table.Where("`deleted_at` IS NULL").Count(&count)
+	table = table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+		return nil, 0, err
+	}
 	return doc, count, nil
 }

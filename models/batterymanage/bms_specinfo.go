@@ -230,6 +230,15 @@ type BatteryDetailInfo struct {
 
 	//Dtu_specInfo
 	Dtu_type   uint8    `json:"dtu_type" gorm:"Type：uint8"`
+	Dtu_setupType   uint8    `json:"dtu_setupType" gorm:"Type：uint8"`
+	Dtu_coreVer   uint16    `json:"dtu_coreVer" gorm:"Type：uint16"`
+	Dtu_hardVer   uint8    `json:"dtu_hardVer" gorm:"Type：uint8"`
+	Dtu_softVer   uint8    `json:"dtu_softVer" gorm:"Type：uint8"`
+	Dtu_protocolVer   string    `json:"dtu_protocolVer" gorm:"Type：size:10"`
+	Dtu_devID      string `json:"dtu_devID" gorm:"size:20;"`
+	Dtu_simIccid      string `json:"dtu_simIccid" gorm:"size:20;"`
+	Dtu_imei      string `json:"dtu_imei" gorm:"size:20;"`
+	Dtu_bmsBindStatus   uint8    `json:"dtu_bmsBindStatus" gorm:"Type：uint8"`
 
 	//Dtu_statusInfo
 	Dtu_latitudeType   string    `json:"dtu_latitudeType" gorm:"Type：size:2"`
@@ -366,6 +375,14 @@ func (e *BatteryDetailInfo) GetBatteryDetailInfo() ([]BatteryDetailInfo,int, err
 		"user_bms_parasetreg.bms_enable_charge_status",
 		"user_dtu_aliyun.dtu_aliyun_status",
 		"user_dtu_specinfo.dtu_type",
+		"user_dtu_specinfo.dtu_setup_type",
+		"user_dtu_specinfo.dtu_core_ver",
+		"user_dtu_specinfo.dtu_hard_ver",
+		"user_dtu_specinfo.dtu_soft_ver",
+		"user_dtu_specinfo.dtu_protocol_ver",
+		"user_dtu_specinfo.dtu_sim_iccid",
+		"user_dtu_specinfo.dtu_imei",
+		"user_dtu_specinfo.dtu_bms_bind_status",
 		"user_dtu_statusinfo.dtu_latitude_type",
 		"user_dtu_statusinfo.dtu_longitude_type",
 		"user_dtu_statusinfo.dtu_latitude",
