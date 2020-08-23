@@ -381,12 +381,7 @@ func (e *BatteryDetailInfo) GetBatteryDetailInfo() ([]BatteryDetailInfo,int, err
 		Joins("LEFT JOIN user_dtu_aliyun ON user_bms_specinfo.dtu_id=user_dtu_aliyun.dtu_id").
 		Joins("LEFT JOIN user_dtu_specinfo ON user_bms_specinfo.dtu_id=user_dtu_specinfo.dtu_id").
 		Joins("LEFT JOIN user_dtu_statusinfo ON user_bms_specinfo.dtu_id=user_dtu_statusinfo.dtu_id")
-	if e.Bms_specInfoId != 0 {
-		table = table.Where("bms_spec_info_id = ?", e.Bms_specInfoId)
-	}
-	if e.Pkg_id != "" {
-		table = table.Where("pkg_id = ?", e.Pkg_id)
-	}
+
 	// 数据权限控制
 	dataPermission := new(models.DataPermission)
 	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
@@ -395,10 +390,21 @@ func (e *BatteryDetailInfo) GetBatteryDetailInfo() ([]BatteryDetailInfo,int, err
 		return nil, 0, err
 	}
 	var count int
-	if err := table.First(&doc).Error; err != nil {
+	table = table.Find(&doc)
+	if table.Error!= nil {
 		return nil, 0, err
 	}
-	table.Where("`deleted_at` IS NULL").Count(&count)
+	if e.Bms_specInfoId != 0 {
+		table = table.Where("bms_spec_info_id = ?", e.Bms_specInfoId)
+	}
+	if e.Pkg_id != "" {
+		table = table.Where("user_bms_specinfo.pkg_id = ?", e.Pkg_id)
+	}
+	table = table.Where("user_bms_specinfo.deleted_at IS NULL")
+	if err := table.First(&doc).Count(&count).Error; err != nil {
+		return nil, 0, err
+	}
+
 	return doc, count, nil
 }
 
