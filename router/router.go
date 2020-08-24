@@ -41,8 +41,7 @@ func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddle
 	registerUserBatterylistRouter(bm1, authMiddleware)
 	registerUserBatterydetailRouter(bm1, authMiddleware)
 	registerserBatteryMoveRouter(bm1, authMiddleware)
-	registerUserDTUlistRouter(bm1, authMiddleware)
-	registerUserBDTUdetailRouter(bm1, authMiddleware)
+
 }
 func registerUserBatterylistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/batterylist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
@@ -65,18 +64,18 @@ func registerserBatteryMoveRouter(user *gin.RouterGroup, authMiddleware *jwt.Gin
 		//battertlist.GET("/bms_statusinfo", batterymanage.GetBatteryDetail_bms_statusinfo)
 	}
 }
-func registerUserDTUlistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
-	battertlist := user.Group("/dtulist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
-	{
-		battertlist.GET("", batterymanage.GetDTUPKGList)
-		battertlist.DELETE("/:dtuPkg_listId", batterymanage.DelOneDTUPKGList)
-	}
-}
-func registerUserBDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
-	battertlist := user.Group("/dtudetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
-	{
-		battertlist.GET("/dtu_statusinfo", batterymanage.GetDTUDetail_dtu_statusinfo)
-		battertlist.GET("/dtu_specinfo", batterymanage.GetDTUDetail_dtu_specinfo)
-		battertlist.GET("/dtu_aliyun", batterymanage.GetDTUDetail_dtu_aliyun)
-	}
-}
+//func registerUserDTUlistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+//	battertlist := user.Group("/dtulist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+//	{
+//		battertlist.GET("", batterymanage.GetDTUPKGList)
+//		battertlist.DELETE("/:dtuPkg_listId", batterymanage.DelOneDTUPKGList)
+//	}
+//}
+//func registerUserBDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+//	battertlist := user.Group("/dtudetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+//	{
+//		battertlist.GET("/dtu_statusinfo", batterymanage.GetDTUDetail_dtu_statusinfo)
+//		battertlist.GET("/dtu_specinfo", batterymanage.GetDTUDetail_dtu_specinfo)
+//		battertlist.GET("/dtu_aliyun", batterymanage.GetDTUDetail_dtu_aliyun)
+//	}
+//}

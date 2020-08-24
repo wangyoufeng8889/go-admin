@@ -24,9 +24,9 @@ var Dtu_Pkg_map map[string]string
 
 func readDtuPkgMapFromDB()  {
 	time.Sleep(5000 * time.Millisecond)
-	var dtuPkg_list []batterymanage.DtuPkg_list
+	var dtuPkg_list []batterymanage.Dtu_specInfo
 
-	orm.Eloquent.Not(batterymanage.DtuPkg_list{Dtu_id: ""}).Find(&dtuPkg_list)
+	orm.Eloquent.Find(&dtuPkg_list)
 	for _, dtupkg := range dtuPkg_list{
 		Dtu_Pkg_map[dtupkg.Dtu_id] = dtupkg.Pkg_id
 	}
@@ -69,16 +69,16 @@ func Struct2Map(obj interface{},ingore []int ) map[string]interface{} {
 	return data
 }
 func aliyunOnOffprocess(msg ModbusMessage)  {
-	var dtu_aliyun,dtu_aliyuntemp batterymanage.Dtu_aliyun
-	dtu_aliyun.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
-	dtu_aliyun.Dtu_aliyunStatus = uint8(msg.Payload[0])
-	dtu_aliyuntemp = dtu_aliyun
+	var dtu_specInfo,dtu_specInfotemp batterymanage.Dtu_specInfo
+	dtu_specInfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
+	dtu_specInfo.Dtu_aliyunStatus = uint8(msg.Payload[0])
+	dtu_specInfotemp = dtu_specInfo
 	//orm.Eloquent.Create(&dtu_aliyun)
-	if err:= orm.Eloquent.Where(&batterymanage.Dtu_aliyun{Dtu_id:msg.DtuID}).FirstOrCreate(&dtu_aliyuntemp).Error;err!=nil{
+	if err:= orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).FirstOrCreate(&dtu_specInfotemp).Error;err!=nil{
 		fmt.Println(err)
 	}else {
-		dtu_aliyunmap:=Struct2Map(dtu_aliyun,[]int{0,2,-3,-2,-1})
-		if err:=orm.Eloquent.Model(batterymanage.Dtu_aliyun{}).Where(&batterymanage.Dtu_aliyun{Dtu_id:msg.DtuID}).Updates(dtu_aliyunmap).Error;err!=nil{
+		dtu_aliyunmap:=Struct2Map(dtu_specInfo,[]int{0,2,3,4,5,6,7,8,9,10,11,12,13,-3,-2,-1})
+		if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).Updates(dtu_aliyunmap).Error;err!=nil{
 			fmt.Println(err)
 		}
 	}
@@ -158,7 +158,7 @@ func sliceUin16Tobyte(sl_in []uint16)(sl_out []byte,err error)  {
 	return sl_out,nil
 }
 func Dtu_BMS_map_Init(msg ModbusMessage)(bool)  {
-	var dtuPkg_list batterymanage.DtuPkg_list
+	var dtuPkg_list batterymanage.Dtu_specInfo
 
 	orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: msg.DtuID}).First(&dtuPkg_list)
 	if len(dtuPkg_list.Pkg_id)>0 {
@@ -233,30 +233,12 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_specinfo.Dtu_simIccid=dtu_sim_iccid
 		dtu_specinfo.Dtu_imei=dtu_imei
 		dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[71])
-		//orm.Eloquent.Create(&dtu_specinfo)
 		dtu_specinfotemp:=dtu_specinfo
 		if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
 			fmt.Println(err)
 		}else {
 			dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-3,-2,-1})
 			if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
-				fmt.Println(err)
-			}
-		}
-		var dtuPkg_list batterymanage.DtuPkg_list
-		dtuPkg_list.Bind_uptime = dtu_specinfo.Dtu_uptime
-		dtuPkg_list.Dtu_id = dtu_id
-		if dtu_specinfo.Dtu_bmsBindStatus == 0 {
-			dtuPkg_list.Pkg_id = ""
-		}else {
-			dtuPkg_list.Pkg_id = pkg_id
-		}
-		dtuPkg_listtemp:=dtuPkg_list
-		if err:=orm.Eloquent.Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).FirstOrCreate(&dtuPkg_listtemp).Error;err != nil {
-			fmt.Println(err)
-		}else {
-			bms_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-3,-2,-1})
-			if err:=orm.Eloquent.Model(batterymanage.DtuPkg_list{}).Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).Updates(bms_specinfomap).Error;err != nil {
 				fmt.Println(err)
 			}
 		}
@@ -304,21 +286,16 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[44])
 	if dtu_specinfo.Dtu_bmsBindStatus == 0 {
 		dtu_specinfo.Pkg_id= ""
-		Dtu_Pkg_map[msg.DtuID] = " "
+		Dtu_Pkg_map[msg.DtuID] = ""
 	}else {
 		dtu_specinfo.Pkg_id= pkg_id
 	}
-	orm.Eloquent.Create(&dtu_specinfo)
-	var dtuPkg_list batterymanage.DtuPkg_list
-	dtuPkg_list.Bind_uptime = dtu_specinfo.Dtu_uptime
-	dtuPkg_list.Dtu_id = dtu_id
-	dtuPkg_list.Pkg_id = dtu_specinfo.Pkg_id
-	dtuPkg_listtemp:=dtuPkg_list
-	if err:=orm.Eloquent.Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).FirstOrCreate(&dtuPkg_listtemp).Error;err != nil {
+	dtu_specinfotemp:=dtu_specinfo
+	if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
 		fmt.Println(err)
 	}else {
-		bms_specinfomap:=Struct2Map(dtuPkg_list,[]int{0,-3,-2,-1})
-		if err:=orm.Eloquent.Model(batterymanage.DtuPkg_list{}).Where(&batterymanage.DtuPkg_list{Dtu_id: dtu_id}).Updates(bms_specinfomap).Error;err != nil {
+		dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-3,-2,-1})
+		if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
 			fmt.Println(err)
 		}
 	}
@@ -334,6 +311,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		}
 	}
 	var bms_statusinfo batterymanage.Bms_statusInfo
+	var bms_statusinfolog batterymanage.Bms_statusInfoLog
 	bms_statusinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	bms_statusinfo.Pkg_id= pkg_id
 	bms_statusinfo.Dtu_id=msg.DtuID
@@ -355,7 +333,31 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfo.Bms_dischargeMosStatus=uint8(reg[11])
 	bms_statusinfo.Bms_otaBufStatus=uint8(reg[12]>>8)
 	bms_statusinfo.Bms_magneticCheck=uint8(reg[12])
-	//orm.Eloquent.Create(&bms_statusinfo)
+
+
+
+	bms_statusinfolog.Dtu_uptime =	bms_statusinfo.Dtu_uptime
+	bms_statusinfolog.Pkg_id =  bms_statusinfo.Pkg_id
+	bms_statusinfolog.Dtu_id=bms_statusinfo.Dtu_id
+	bms_statusinfolog.Bms_chargeStatus=bms_statusinfo.Bms_chargeStatus
+	bms_statusinfolog.Bms_soc=bms_statusinfo.Bms_soc
+	bms_statusinfolog.Bms_errStatus=bms_statusinfo.Bms_errStatus
+	bms_statusinfolog.Bms_errNbr=bms_statusinfo.Bms_errNbr
+	bms_statusinfolog.Bms_errCode=bms_statusinfo.Bms_errCode
+	bms_statusinfolog.Bms_voltage=bms_statusinfo.Bms_voltage
+	bms_statusinfolog.Bms_current=bms_statusinfo.Bms_current
+	bms_statusinfolog.Bms_maxCellVoltage=bms_statusinfo.Bms_maxCellVoltage
+	bms_statusinfolog.Bms_minCellVoltage=bms_statusinfo.Bms_minCellVoltage
+	bms_statusinfolog.Bms_averageCellVoltage=bms_statusinfo.Bms_averageCellVoltage
+	bms_statusinfolog.Bms_maxTemperature=bms_statusinfo.Bms_maxTemperature
+	bms_statusinfolog.Bms_minTemperature=bms_statusinfo.Bms_minTemperature
+	bms_statusinfolog.Bms_mosTemperature=bms_statusinfo.Bms_mosTemperature
+	bms_statusinfolog.Bms_balanceResistance=bms_statusinfo.Bms_balanceResistance
+	bms_statusinfolog.Bms_chargeMosStatus=bms_statusinfo.Bms_chargeMosStatus
+	bms_statusinfolog.Bms_dischargeMosStatus=bms_statusinfo.Bms_dischargeMosStatus
+	bms_statusinfolog.Bms_otaBufStatus=bms_statusinfo.Bms_otaBufStatus
+	bms_statusinfolog.Bms_magneticCheck=bms_statusinfo.Bms_magneticCheck
+	orm.Eloquent.Create(&bms_statusinfolog)
 	bms_statusinfotemp:=bms_statusinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_statusInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_statusinfotemp).Error;err != nil {
 		fmt.Println(err)
@@ -585,7 +587,19 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_temperatureinfo.Bms_temperature4= uint8(reg[1]) - 40
 	bms_temperatureinfo.Bms_temperature5= uint8(reg[2]>>8) - 40
 	bms_temperatureinfo.Bms_temperature6= uint8(reg[2]) - 40
-	//orm.Eloquent.Create(&bms_temperatureinfo)
+
+	var bms_temperatureinfolog batterymanage.Bms_temperatureInfoLog
+	bms_temperatureinfolog.Dtu_uptime=bms_temperatureinfo.Dtu_uptime
+	bms_temperatureinfolog.Pkg_id= pkg_id
+	bms_temperatureinfolog.Dtu_id=msg.DtuID
+	bms_temperatureinfolog.Bms_temperature1= bms_temperatureinfo.Bms_temperature1
+	bms_temperatureinfolog.Bms_temperature2= bms_temperatureinfo.Bms_temperature2
+	bms_temperatureinfolog.Bms_temperature3= bms_temperatureinfo.Bms_temperature3
+	bms_temperatureinfolog.Bms_temperature4= bms_temperatureinfo.Bms_temperature4
+	bms_temperatureinfolog.Bms_temperature5= bms_temperatureinfo.Bms_temperature5
+	bms_temperatureinfolog.Bms_temperature6= bms_temperatureinfo.Bms_temperature6
+
+	orm.Eloquent.Create(&bms_temperatureinfolog)
 	bms_temperatureinfotemp:=bms_temperatureinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_temperatureInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_temperatureinfotemp).Error;err != nil {
 		fmt.Println(err)
