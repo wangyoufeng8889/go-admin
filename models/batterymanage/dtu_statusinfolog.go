@@ -85,7 +85,45 @@ func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.T
 		table = table.Where("user_dtu_statusinfolog.dtu_id = ?", e.Dtu_id)
 	}
 	table = table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+	if err:=table.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").Find(&doc).Count(&count).Error;err!= nil{
+		return nil, 0, err
+	}
+	return doc, count, nil
+}
+func (e *BatteryMoveInfo) GetBatteryLocationInfo() ([]BatteryMoveInfo,int, error) {
+	var doc []BatteryMoveInfo
+
+	table := orm.Eloquent.Table(e.TableName()).Select([]string{"user_dtu_statusinfolog.dtu_status_info_log_id",
+		"user_dtu_statusinfolog.dtu_uptime",
+		"user_dtu_statusinfolog.dtu_id",
+		"user_dtu_statusinfolog.pkg_id",
+		"user_dtu_statusinfolog.dtu_latitude_type",
+		"user_dtu_statusinfolog.dtu_longitude_type",
+		"user_dtu_statusinfolog.dtu_latitude",
+		"user_dtu_statusinfolog.dtu_longitude"})
+
+	// 数据权限控制
+	dataPermission := new(models.DataPermission)
+	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
+	table, err := dataPermission.GetDataScope(e.TableName(), table)
+	if err != nil {
+		return nil, 0, err
+	}
+	var count int
+	table = table.Order("dtu_status_info_log_id").Find(&doc)
+	if table.Error != nil {
+		return nil, 0, err
+	}
+	if e.Dtu_statusInfoLogId != 0 {
+		table = table.Where("dtu_status_info_log_id = ?", e.Dtu_statusInfoLogId)
+	}
+	if e.Pkg_id != "" {
+		table = table.Where("user_dtu_statusinfolog.pkg_id = ?", e.Pkg_id)
+	}
+	if e.Dtu_id != "" {
+		table = table.Where("user_dtu_statusinfolog.dtu_id = ?", e.Dtu_id)
+	}
+	if err:=table.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").First(&doc).Count(&count).Error;err!= nil{
 		return nil, 0, err
 	}
 	return doc, count, nil

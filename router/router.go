@@ -61,6 +61,9 @@ func registerserBatteryMoveRouter(user *gin.RouterGroup, authMiddleware *jwt.Gin
 	battertlist := user.Group("/batterymove").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		battertlist.GET("", batterymanage.GetBatteryMove)//电池列表
+		battertlist.GET("/location", batterymanage.GetBatteryLocation)//电池列表
+
+
 		//battertlist.GET("/bms_statusinfo", batterymanage.GetBatteryDetail_bms_statusinfo)
 	}
 }

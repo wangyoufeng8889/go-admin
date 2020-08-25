@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-//电池列表
+//电池轨迹
 // @Summary 电池轨迹数据
 // @Description Get JSON
 // @Tags 电池轨迹/BatteryMove
@@ -53,6 +53,27 @@ func GetBatteryMove(c *gin.Context) {
 
 	data.DataScope = tools.GetUserIdStr(c)
 	result, _, err := data.GetBatteryMoveInfo(starttime, endtime)
+	tools.HasError(err, "", -1)
+	app.OK(c, result, "")
+}
+//电池位置
+// @Summary 电池位置数据
+// @Description Get JSON
+// @Tags 电池轨迹/BatteryMove
+// @Param pkg_id query string false "pkg_id"
+// @Param dtu_id query string false "dtu_id"
+// @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
+// @Router /api/bm1/battery/batterylist [get]
+// @Security Bearer
+func GetBatteryLocation(c *gin.Context) {
+	var data batterymanage.BatteryMoveInfo
+	var err error
+		//按照json格式
+	data.Pkg_id = c.Request.FormValue("pkg_id")
+	data.Dtu_id = c.Request.FormValue("dtu_id")
+
+	data.DataScope = tools.GetUserIdStr(c)
+	result, _, err := data.GetBatteryLocationInfo()
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }

@@ -31,6 +31,10 @@ INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterymove', 'G
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterymove', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterymove', 'GET', NULL, NULL, NULL);
 
+INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterymove/location', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterymove/location', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterymove/location', 'GET', NULL, NULL, NULL);
+
 
 
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtudetail', 'GET', NULL, NULL, NULL);

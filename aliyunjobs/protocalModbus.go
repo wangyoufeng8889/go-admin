@@ -72,15 +72,17 @@ func aliyunOnOffprocess(msg ModbusMessage)  {
 	var dtu_specInfo,dtu_specInfotemp batterymanage.Dtu_specInfo
 	dtu_specInfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	dtu_specInfo.Dtu_aliyunStatus = uint8(msg.Payload[0])
+
 	dtu_specInfotemp = dtu_specInfo
 	//orm.Eloquent.Create(&dtu_aliyun)
 	if err:= orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).FirstOrCreate(&dtu_specInfotemp).Error;err!=nil{
 		fmt.Println(err)
 	}else {
 		dtu_aliyunmap:=Struct2Map(dtu_specInfo,[]int{0,2,3,4,5,6,7,8,9,10,11,12,13,-3,-2,-1})
-		if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).Updates(dtu_aliyunmap).Error;err!=nil{
+		if err := orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).Updates(dtu_aliyunmap).Error;err!=nil{
 			fmt.Println(err)
 		}
+		fmt.Println("dtu=",msg.DtuID,"|aliyun=",dtu_specInfo.Dtu_aliyunStatus,time.Now())
 	}
 }
 func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err error)  {
@@ -237,7 +239,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
 			fmt.Println(err)
 		}else {
-			dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-3,-2,-1})
+			dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-4,-3,-2,-1})
 			if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
 				fmt.Println(err)
 			}
@@ -294,7 +296,7 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
 		fmt.Println(err)
 	}else {
-		dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-3,-2,-1})
+		dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-4,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
 			fmt.Println(err)
 		}
@@ -401,24 +403,26 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_statusinfo.Dtu_errStatus=uint8(reg[23] >> 8)
 		dtu_statusinfo.Dtu_errNbr=uint8(reg[23])
 		dtu_statusinfo.Dtu_errCode=uint16(reg[24])
-		dtu_statusinfolog := batterymanage.Dtu_statusInfoLog{Dtu_statusInfoLogId:dtu_statusinfo.Dtu_statusInfoId,
-			Dtu_uptime:dtu_statusinfo.Dtu_uptime,
-			Dtu_id:dtu_statusinfo.Dtu_id,
-			Pkg_id:dtu_statusinfo.Pkg_id,
-			Dtu_latitudeType:dtu_statusinfo.Dtu_latitudeType,
-			Dtu_longitudeType:dtu_statusinfo.Dtu_longitudeType,
-			Dtu_latitude:dtu_statusinfo.Dtu_latitude,
-			Dtu_longitude:dtu_statusinfo.Dtu_longitude,
-			Dtu_csq:dtu_statusinfo.Dtu_csq,
-			Dtu_locateMode:dtu_statusinfo.Dtu_locateMode,
-			Dtu_gpsSateCnt:dtu_statusinfo.Dtu_gpsSateCnt,
-			Dtu_speed:dtu_statusinfo.Dtu_speed,
-			Dtu_altitude:dtu_statusinfo.Dtu_altitude,
-			Dtu_pluginVoltage:dtu_statusinfo.Dtu_pluginVoltage,
-			Dtu_selfInVoltage:dtu_statusinfo.Dtu_selfInVoltage,
-			Dtu_errStatus:dtu_statusinfo.Dtu_errStatus,
-			Dtu_errNbr:dtu_statusinfo.Dtu_errNbr,
-			Dtu_errCode:dtu_statusinfo.Dtu_errCode}
+
+		var dtu_statusinfolog batterymanage.Dtu_statusInfoLog
+		dtu_statusinfolog.Dtu_statusInfoLogId=dtu_statusinfo.Dtu_statusInfoId
+		dtu_statusinfolog.Dtu_uptime = dtu_statusinfo.Dtu_uptime
+		dtu_statusinfolog.Dtu_id = dtu_statusinfo.Dtu_id
+		dtu_statusinfolog.Pkg_id = dtu_statusinfo.Pkg_id
+		dtu_statusinfolog.Dtu_latitudeType = dtu_statusinfo.Dtu_latitudeType
+		dtu_statusinfolog.Dtu_longitudeType = dtu_statusinfo.Dtu_longitudeType
+		dtu_statusinfolog.Dtu_latitude = dtu_statusinfo.Dtu_latitude
+		dtu_statusinfolog.Dtu_longitude = dtu_statusinfo.Dtu_longitude
+		dtu_statusinfolog.Dtu_csq = dtu_statusinfo.Dtu_csq
+		dtu_statusinfolog.Dtu_locateMode = dtu_statusinfo.Dtu_locateMode
+		dtu_statusinfolog.Dtu_gpsSateCnt = dtu_statusinfo.Dtu_gpsSateCnt
+		dtu_statusinfolog.Dtu_speed = dtu_statusinfo.Dtu_speed
+		dtu_statusinfolog.Dtu_altitude = dtu_statusinfo.Dtu_altitude
+		dtu_statusinfolog.Dtu_pluginVoltage = dtu_statusinfo.Dtu_pluginVoltage
+		dtu_statusinfolog.Dtu_selfInVoltage = dtu_statusinfo.Dtu_selfInVoltage
+		dtu_statusinfolog.Dtu_errStatus = dtu_statusinfo.Dtu_errStatus
+		dtu_statusinfolog.Dtu_errNbr = dtu_statusinfo.Dtu_errNbr
+		dtu_statusinfolog.Dtu_errCode = dtu_statusinfo.Dtu_errCode
 		if err:=orm.Eloquent.Create(&dtu_statusinfolog).Error;err!=nil{
 			fmt.Println(err)
 		}
@@ -661,20 +665,20 @@ func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_paraSetReg.Dtu_id=msg.DtuID
 	bms_paraSetReg.Bms_chargeMosCtr= uint8(reg[0]>>8)
 	bms_paraSetReg.Bms_dischargeMosCtr= uint8(reg[0])
-	bms_paraSetReg.Bms_chargeHighTempProtect= uint8(reg[1]>>8)
-	bms_paraSetReg.Bms_chargeHighTempRelease= uint8(reg[1])
-	bms_paraSetReg.Bms_chargeLowTempProtect= uint8(reg[2]>>8)
-	bms_paraSetReg.Bms_chargeLowTempRelease= uint8(reg[2])
+	bms_paraSetReg.Bms_chargeHighTempProtect= uint8(reg[1]>>8) - 40
+	bms_paraSetReg.Bms_chargeHighTempRelease= uint8(reg[1]) - 40
+	bms_paraSetReg.Bms_chargeLowTempProtect= uint8(reg[2]>>8) - 40
+	bms_paraSetReg.Bms_chargeLowTempRelease= uint8(reg[2]) - 40
 	bms_paraSetReg.Bms_chargeHighTempDelay= uint8(reg[3]>>8)
 	bms_paraSetReg.Bms_chargeLowTempDelay= uint8(reg[3])
-	bms_paraSetReg.Bms_dischargeHighTempProtect= uint8(reg[4]>>8)
-	bms_paraSetReg.Bms_dischargeHighTempRelease= uint8(reg[4])
-	bms_paraSetReg.Bms_dischargeLowTempProtect= uint8(reg[5]>>8)
-	bms_paraSetReg.Bms_dischargeLowTempRelease= uint8(reg[5])
+	bms_paraSetReg.Bms_dischargeHighTempProtect= uint8(reg[4]>>8) - 40
+	bms_paraSetReg.Bms_dischargeHighTempRelease= uint8(reg[4]) - 40
+	bms_paraSetReg.Bms_dischargeLowTempProtect= uint8(reg[5]>>8) - 40
+	bms_paraSetReg.Bms_dischargeLowTempRelease= uint8(reg[5]) - 40
 	bms_paraSetReg.Bms_dischargeHighTempDelay= uint8(reg[6]>>8)
 	bms_paraSetReg.Bms_dischargeLowTempDelay= uint8(reg[6])
-	bms_paraSetReg.Bms_mosHighTempProtect= uint8(reg[7]>>8)
-	bms_paraSetReg.Bms_mosHighTempRelease= uint8(reg[7])
+	bms_paraSetReg.Bms_mosHighTempProtect= uint8(reg[7]>>8) - 40
+	bms_paraSetReg.Bms_mosHighTempRelease= uint8(reg[7]) - 40
 	bms_paraSetReg.Bms_pkgOverVoltageProtect= uint16(reg[11])
 	bms_paraSetReg.Bms_pkgOverVoltageRelease= uint16(reg[12])
 	bms_paraSetReg.Bms_pkgUnderVoltageProtect= uint16(reg[13])
