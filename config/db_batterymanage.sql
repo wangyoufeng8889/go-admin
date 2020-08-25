@@ -1,5 +1,10 @@
 -- 开始初始化数据 ;
 BEGIN;
+
+INSERT INTO sys_setting VALUES (1, '电池监控管理系统', 'http://127.0.0.1:8001/static/uploadfile/c4ba3626-799f-4615-8e2a-27a6598c3383.png', '2020-08-05 14:27:34', '2020-08-07 10:13:31' ,NULL);
+
+
+
 INSERT INTO sys_dict_type VALUES (11, '电池状态', 'sys_charge_status', 0, '1', '', '电池状态列表', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO sys_dict_type VALUES (12, '网络状态', 'sys_net_status', 0, '1', '', '网络状态列表', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO sys_dict_type VALUES (13, '电池类型', 'sys_pkg_type', 0, '1', '', '电池类型列表', '2020-04-11 15:52:48', NULL, NULL);
