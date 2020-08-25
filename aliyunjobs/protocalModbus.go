@@ -153,9 +153,16 @@ func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err
 	return addr, reglen, reg,nil
 }
 func sliceUin16Tobyte(sl_in []uint16)(sl_out []byte,err error)  {
+	var temp []byte
 	sl_in_len := len(sl_in)
 	for i:=0;i<sl_in_len;i++ {
-		sl_out = append(sl_out,byte(sl_in[i]>>8),byte(sl_in[i]))
+		temp = append(temp,byte(sl_in[i]>>8),byte(sl_in[i]))
+	}
+	sl_in_len = len(temp)
+	for i:=0;i<sl_in_len;i++{
+		if temp[i] != 0x00{
+			sl_out = append(sl_out,temp[i])
+		}
 	}
 	return sl_out,nil
 }
@@ -313,7 +320,6 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		}
 	}
 	var bms_statusinfo batterymanage.Bms_statusInfo
-	var bms_statusinfolog batterymanage.Bms_statusInfoLog
 	bms_statusinfo.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
 	bms_statusinfo.Pkg_id= pkg_id
 	bms_statusinfo.Dtu_id=msg.DtuID
@@ -337,7 +343,7 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfo.Bms_magneticCheck=uint8(reg[12])
 
 
-
+	var bms_statusinfolog batterymanage.Bms_statusInfoLog
 	bms_statusinfolog.Dtu_uptime =	bms_statusinfo.Dtu_uptime
 	bms_statusinfolog.Pkg_id =  bms_statusinfo.Pkg_id
 	bms_statusinfolog.Dtu_id=bms_statusinfo.Dtu_id
@@ -359,7 +365,9 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfolog.Bms_dischargeMosStatus=bms_statusinfo.Bms_dischargeMosStatus
 	bms_statusinfolog.Bms_otaBufStatus=bms_statusinfo.Bms_otaBufStatus
 	bms_statusinfolog.Bms_magneticCheck=bms_statusinfo.Bms_magneticCheck
-	orm.Eloquent.Create(&bms_statusinfolog)
+	if err:=orm.Eloquent.Create(&bms_statusinfolog).Error;err!=nil{
+		fmt.Println(err)
+	}
 	bms_statusinfotemp:=bms_statusinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_statusInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_statusinfotemp).Error;err != nil {
 		fmt.Println(err)
@@ -405,7 +413,6 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_statusinfo.Dtu_errCode=uint16(reg[24])
 
 		var dtu_statusinfolog batterymanage.Dtu_statusInfoLog
-		dtu_statusinfolog.Dtu_statusInfoLogId=dtu_statusinfo.Dtu_statusInfoId
 		dtu_statusinfolog.Dtu_uptime = dtu_statusinfo.Dtu_uptime
 		dtu_statusinfolog.Dtu_id = dtu_statusinfo.Dtu_id
 		dtu_statusinfolog.Pkg_id = dtu_statusinfo.Pkg_id
@@ -481,6 +488,29 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_statusinfo.Dtu_errStatus=uint8(reg[10] >> 8)
 	dtu_statusinfo.Dtu_errNbr=uint8(reg[10])
 	dtu_statusinfo.Dtu_errCode=uint16(reg[11])
+
+	var dtu_statusinfolog batterymanage.Dtu_statusInfoLog
+	dtu_statusinfolog.Dtu_uptime = dtu_statusinfo.Dtu_uptime
+	dtu_statusinfolog.Dtu_id = dtu_statusinfo.Dtu_id
+	dtu_statusinfolog.Pkg_id = dtu_statusinfo.Pkg_id
+	dtu_statusinfolog.Dtu_latitudeType = dtu_statusinfo.Dtu_latitudeType
+	dtu_statusinfolog.Dtu_longitudeType = dtu_statusinfo.Dtu_longitudeType
+	dtu_statusinfolog.Dtu_latitude = dtu_statusinfo.Dtu_latitude
+	dtu_statusinfolog.Dtu_longitude = dtu_statusinfo.Dtu_longitude
+	dtu_statusinfolog.Dtu_csq = dtu_statusinfo.Dtu_csq
+	dtu_statusinfolog.Dtu_locateMode = dtu_statusinfo.Dtu_locateMode
+	dtu_statusinfolog.Dtu_gpsSateCnt = dtu_statusinfo.Dtu_gpsSateCnt
+	dtu_statusinfolog.Dtu_speed = dtu_statusinfo.Dtu_speed
+	dtu_statusinfolog.Dtu_altitude = dtu_statusinfo.Dtu_altitude
+	dtu_statusinfolog.Dtu_pluginVoltage = dtu_statusinfo.Dtu_pluginVoltage
+	dtu_statusinfolog.Dtu_selfInVoltage = dtu_statusinfo.Dtu_selfInVoltage
+	dtu_statusinfolog.Dtu_errStatus = dtu_statusinfo.Dtu_errStatus
+	dtu_statusinfolog.Dtu_errNbr = dtu_statusinfo.Dtu_errNbr
+	dtu_statusinfolog.Dtu_errCode = dtu_statusinfo.Dtu_errCode
+	if err:=orm.Eloquent.Create(&dtu_statusinfolog).Error;err!=nil{
+		fmt.Println(err)
+	}
+
 	//orm.Eloquent.Create(&dtu_statusinfo)
 	dtu_statusinfotemp:=dtu_statusinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_statusinfotemp).Error;err != nil {
@@ -559,7 +589,34 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_cellinfo.Bms_cellVoltage18= uint16(reg[17])
 	bms_cellinfo.Bms_cellVoltage19= uint16(reg[18])
 	bms_cellinfo.Bms_cellVoltage20= uint16(reg[19])
-	//orm.Eloquent.Create(&bms_cellinfo)
+
+	var bms_cellinfolog batterymanage.Bms_cellInfoLog
+	bms_cellinfolog.Dtu_uptime= bms_cellinfo.Dtu_uptime
+	bms_cellinfolog.Pkg_id= bms_cellinfo.Pkg_id
+	bms_cellinfolog.Dtu_id=bms_cellinfo.Dtu_id
+	bms_cellinfolog.Bms_cellVoltage1= bms_cellinfo.Bms_cellVoltage1
+	bms_cellinfolog.Bms_cellVoltage2= bms_cellinfo.Bms_cellVoltage2
+	bms_cellinfolog.Bms_cellVoltage3= bms_cellinfo.Bms_cellVoltage3
+	bms_cellinfolog.Bms_cellVoltage4= bms_cellinfo.Bms_cellVoltage4
+	bms_cellinfolog.Bms_cellVoltage5= bms_cellinfo.Bms_cellVoltage5
+	bms_cellinfolog.Bms_cellVoltage6= bms_cellinfo.Bms_cellVoltage6
+	bms_cellinfolog.Bms_cellVoltage7= bms_cellinfo.Bms_cellVoltage7
+	bms_cellinfolog.Bms_cellVoltage8= bms_cellinfo.Bms_cellVoltage8
+	bms_cellinfolog.Bms_cellVoltage9= bms_cellinfo.Bms_cellVoltage9
+	bms_cellinfolog.Bms_cellVoltage10= bms_cellinfo.Bms_cellVoltage10
+	bms_cellinfolog.Bms_cellVoltage11= bms_cellinfo.Bms_cellVoltage11
+	bms_cellinfolog.Bms_cellVoltage12= bms_cellinfo.Bms_cellVoltage12
+	bms_cellinfolog.Bms_cellVoltage13= bms_cellinfo.Bms_cellVoltage13
+	bms_cellinfolog.Bms_cellVoltage14= bms_cellinfo.Bms_cellVoltage14
+	bms_cellinfolog.Bms_cellVoltage15= bms_cellinfo.Bms_cellVoltage15
+	bms_cellinfolog.Bms_cellVoltage16= bms_cellinfo.Bms_cellVoltage16
+	bms_cellinfolog.Bms_cellVoltage17= bms_cellinfo.Bms_cellVoltage17
+	bms_cellinfolog.Bms_cellVoltage18= bms_cellinfo.Bms_cellVoltage18
+	bms_cellinfolog.Bms_cellVoltage19= bms_cellinfo.Bms_cellVoltage19
+	bms_cellinfolog.Bms_cellVoltage20= bms_cellinfo.Bms_cellVoltage20
+	if err:=orm.Eloquent.Create(&bms_cellinfolog).Error;err!=nil{
+		fmt.Println(err)
+	}
 	bms_cellinfotemp:=bms_cellinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_cellInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_cellinfotemp).Error;err != nil {
 		fmt.Println(err)
@@ -602,8 +659,9 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_temperatureinfolog.Bms_temperature4= bms_temperatureinfo.Bms_temperature4
 	bms_temperatureinfolog.Bms_temperature5= bms_temperatureinfo.Bms_temperature5
 	bms_temperatureinfolog.Bms_temperature6= bms_temperatureinfo.Bms_temperature6
-
-	orm.Eloquent.Create(&bms_temperatureinfolog)
+	if err:=orm.Eloquent.Create(&bms_temperatureinfolog).Error;err!=nil{
+		fmt.Println(err)
+	}
 	bms_temperatureinfotemp:=bms_temperatureinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_temperatureInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_temperatureinfotemp).Error;err != nil {
 		fmt.Println(err)
