@@ -13,7 +13,7 @@ import (
 // @Param Pkg_id query string false "Pkg_id"
 // @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
 // @Router /api/v1/post [get]
-// @Security Bearer
+// @john wang
 func GetDtuDetail(c *gin.Context) {
 	var data batterymanage.DtuDetailInfo
 	var err error

@@ -78,7 +78,7 @@ INSERT INTO sys_config VALUES (1, '主框架页-默认皮肤样式名称', 'sys_
 INSERT INTO sys_config VALUES (2, '用户管理-账号初始密码', 'sys.user.initPassword', '123456', 'Y', '初始化密码 123456', '1', '1', '2020-02-29 10:38:23', '2020-03-11 00:35:28', NULL);
 INSERT INTO sys_config VALUES (3, '主框架页-侧边栏主题', 'sys_index_sideTheme', 'theme-dark', 'Y', '深色主题theme-dark，浅色主题theme-light', '1', '1', '2020-02-29 10:39:01', '2020-04-07 23:21:50', NULL);
 
-INSERT INTO sys_dept VALUES (1, 0, '/0/1', '爱拓科技', 0, 'aituo', '13782218188', 'atuo@aituo.com', 0, '1', '1', '2020-02-27 15:30:19', '2020-03-10 21:09:21', NULL);
+INSERT INTO sys_dept VALUES (1, 0, '/0/1', '小鲸科技', 0, 'aituo', '13782218188', 'atuo@aituo.com', 0, '1', '1', '2020-02-27 15:30:19', '2020-03-10 21:09:21', NULL);
 INSERT INTO sys_dept VALUES (7, 1, '/0/1/7', '研发部', 1, '', '', '', 0, '1', '1', '2020-03-08 23:10:59', '2020-04-08 13:00:03', NULL);
 INSERT INTO sys_dept VALUES (8, 1, '/0/1/8', '运维部', 0, '', '', '', 0, '1', NULL, '2020-03-08 23:11:08', '2020-03-10 16:50:27', NULL);
 INSERT INTO sys_dept VALUES (9, 1, '/0/1/9', '客服部', 0, '', '', '', 0, '1', NULL, '2020-03-08 23:11:15', '2020-03-08 23:11:15', NULL);

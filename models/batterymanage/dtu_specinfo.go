@@ -158,6 +158,14 @@ type DtuDetailInfo struct {
 	Bms_voltage   uint16    `json:"bms_voltage" gorm:"Type：uint16"`
 	Bms_current	  uint16  `json:"bms_current" gorm:"Type：uint16"`
 
+	//Dtu_paraSetReg
+	Dtu_pkgInfoReportPeriod   uint16    `json:"dtu_pkgInfoReportPeriod" gorm:"Type：uint16"`
+	Dtu_remoteLockCar   uint16    `json:"dtu_remoteLockCar" gorm:"Type：uint16"`
+	Dtu_voiceTipsOnOff   uint8    `json:"dtu_voiceTipsOnOff" gorm:"Type：uint8"`
+	Dtu_voiceTipsThresholdValue   uint8    `json:"dtu_voiceTipsThresholdValue" gorm:"Type：uint8"`
+	Dtu_voiceTipsDownBulk   uint8    `json:"dtu_voiceTipsDownBulk" gorm:"Type：uint8"`
+	Dtu_otaIP      string `json:"dtu_otaIP" gorm:"size:20;"`
+
 	DataScope  string `json:"dataScope" gorm:"-"`
 	models.BaseModel
 
@@ -204,13 +212,21 @@ func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
 				"user_dtu_statusinfo.dtu_err_nbr",
 				"user_dtu_statusinfo.dtu_err_code",
 
+				"user_dtu_paraSetReg.dtu_pkg_info_report_period",
+				"user_dtu_paraSetReg.dtu_remote_lock_car",
+				"user_dtu_paraSetReg.dtu_voice_tips_on_off",
+				"user_dtu_paraSetReg.dtu_voice_tips_threshold_value",
+				"user_dtu_paraSetReg.dtu_voice_tips_down_bulk",
+				"user_dtu_paraSetReg.dtu_ota_iP",
+
 				"user_bms_statusinfo.bms_charge_status",
 				"user_bms_statusinfo.bms_soc",
 				"user_bms_statusinfo.bms_err_nbr",
 				"user_bms_statusinfo.bms_err_code",
 				"user_bms_statusinfo.bms_voltage",
 				"user_bms_statusinfo.bms_current"})
-			table = table.Joins("LEFT JOIN user_dtu_statusinfo ON user_dtu_specinfo.pkg_id=user_dtu_statusinfo.pkg_id").
+			table = table.Joins("LEFT JOIN user_dtu_statusinfo ON user_dtu_specinfo.dtu_id=user_dtu_statusinfo.dtu_id").
+				Joins("LEFT JOIN user_dtu_parasetreg ON user_dtu_specinfo.dtu_id=user_dtu_parasetreg.dtu_id").
 				Joins("LEFT JOIN user_bms_statusinfo ON user_dtu_specinfo.pkg_id=user_bms_statusinfo.pkg_id")
 		}else {
 			table = table.Select([]string{"user_dtu_specinfo.dtu_spec_info_id",
@@ -237,8 +253,16 @@ func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
 				"user_dtu_statusinfo.dtu_plugin_voltage",
 				"user_dtu_statusinfo.dtu_self_in_voltage",
 				"user_dtu_statusinfo.dtu_err_nbr",
-				"user_dtu_statusinfo.dtu_err_code"})
-			table = table.Joins("LEFT JOIN user_dtu_statusinfo ON user_dtu_specinfo.pkg_id=user_dtu_statusinfo.pkg_id")
+				"user_dtu_statusinfo.dtu_err_code",
+
+				"user_dtu_paraSetReg.dtu_pkg_info_report_period",
+				"user_dtu_paraSetReg.dtu_remote_lock_car",
+				"user_dtu_paraSetReg.dtu_voice_tips_on_off",
+				"user_dtu_paraSetReg.dtu_voice_tips_threshold_value",
+				"user_dtu_paraSetReg.dtu_voice_tips_down_bulk",
+				"user_dtu_paraSetReg.dtu_ota_iP",})
+			table = table.Joins("LEFT JOIN user_dtu_statusinfo ON user_dtu_specinfo.dtu_id=user_dtu_statusinfo.dtu_id").
+				Joins("LEFT JOIN user_dtu_parasetreg ON user_dtu_specinfo.dtu_id=user_dtu_parasetreg.dtu_id")
 		}
 	}
 

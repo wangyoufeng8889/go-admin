@@ -43,7 +43,14 @@ func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddle
 	registerserBatteryMoveRouter(bm1, authMiddleware)
 	registerUserDTUlistRouter(bm1, authMiddleware)
 	registerUserDTUdetailRouter(bm1, authMiddleware)
+	registerUserBatteryDashboardRouter(bm1, authMiddleware)
 
+}
+func registerUserBatteryDashboardRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	battertlist := user.Group("/dashboard").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		battertlist.GET("", batterymanage.GetBatteryDashboardInfo)//电池大屏信息
+	}
 }
 func registerUserBatterylistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/batterylist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
@@ -55,27 +62,27 @@ func registerUserBatterylistRouter(user *gin.RouterGroup, authMiddleware *jwt.Gi
 func registerUserBatterydetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/batterydetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		battertlist.GET("", batterymanage.GetBatteryDetail)//电池列表
+		battertlist.GET("", batterymanage.GetBatteryDetail)//电池详情
 		//battertlist.GET("/bms_statusinfo", batterymanage.GetBatteryDetail_bms_statusinfo)
 	}
 }
 func registerserBatteryMoveRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/batterymove").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		battertlist.GET("", batterymanage.GetBatteryMove)//电池列表
-		battertlist.GET("/location", batterymanage.GetBatteryLocation)//电池列表
+		battertlist.GET("", batterymanage.GetBatteryMove)//电池轨迹
+		battertlist.GET("/location", batterymanage.GetBatteryLocation)//电池位置
 	}
 }
 func registerUserDTUlistRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/dtulist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		battertlist.GET("", batterymanage.GetDtuList)
-		battertlist.DELETE("/:dtu_specInfoId", batterymanage.DelOneDtuList)
+		battertlist.GET("", batterymanage.GetDtuList)//dtu列表
+		battertlist.DELETE("/:dtu_specInfoId", batterymanage.DelOneDtuList)//删除dtu
 	}
 }
 func registerUserDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
 	battertlist := user.Group("/dtudetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
-		battertlist.GET("", batterymanage.GetDtuDetail)
+		battertlist.GET("", batterymanage.GetDtuDetail)//dtu详情
 	}
 }

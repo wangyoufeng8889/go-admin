@@ -20,7 +20,7 @@ import (
 // @Param pageIndex query int false "页码"
 // @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
 // @Router /api/bm1/battery/batterylist [get]
-// @Security Bearer
+// @john wang
 func GetBatteryList(c *gin.Context) {
 	var data batterymanage.BatteryListInfo
 	var err error

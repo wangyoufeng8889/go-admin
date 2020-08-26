@@ -1,7 +1,7 @@
 -- 开始初始化数据 ;
 BEGIN;
 
-INSERT INTO sys_setting VALUES (1, '电池监控管理系统', 'http://127.0.0.1:8001/static/uploadfile/c4ba3626-799f-4615-8e2a-27a6598c3383.png', '2020-08-05 14:27:34', '2020-08-07 10:13:31' ,NULL);
+INSERT INTO sys_setting VALUES (1, '电池监控管理系统', 'https://gitee.com/mydearzwj/image/raw/master/img/go-admin.png', '2020-08-05 14:27:34', '2020-08-07 10:13:31' ,NULL);
 
 
 
@@ -21,6 +21,11 @@ INSERT INTO sys_dict_data VALUES (38, 0, '磷酸铁锂', '2', 'sys_pkg_type', ''
 INSERT INTO sys_dict_data VALUES (39, 0, '2G', '2', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_2G', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 INSERT INTO sys_dict_data VALUES (40, 0, '4G-CAT4', '4', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_CAT1', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 INSERT INTO sys_dict_data VALUES (41, 0, '4G-CAT1', '6', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_CAT4', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
+
+
+INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dashboard', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dashboard', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dashboard', 'GET', NULL, NULL, NULL);
 
 
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterylist', 'GET', NULL, NULL, NULL);
@@ -70,6 +75,7 @@ INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/
 INSERT INTO `sys_menu` VALUES (6, 'batterydetail', '电池详情', 'date', '/api/bm1/battery/batterydetail', '/0/4/6', 'C', '', '', 4, 1, '', '/batterydetail/index', 2, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (7, 'dtulist', 'DTU列表', 'component', '/api/bm1/battery/dtulist', '/0/4/7', 'C', '', '', 4, 1, '', '/dtulist/index', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (8, 'dtudetail', 'DTU详情', 'date', '/api/bm1/battery/dtudetail', '/0/4/8', 'C', '', '', 4, 1, '', '/dtudetail/index', 4, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+
 
 INSERT INTO sys_role_menu VALUES (2, 4, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (2, 5, 'common', NULL, NULL);

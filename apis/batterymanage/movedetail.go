@@ -19,7 +19,7 @@ import (
 // @Param endTime query Time false "结束时间"
 // @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
 // @Router /api/bm1/battery/batterylist [get]
-// @Security Bearer
+// @john wang
 func GetBatteryMove(c *gin.Context) {
 	var data batterymanage.BatteryMoveInfo
 	var err error
@@ -64,7 +64,7 @@ func GetBatteryMove(c *gin.Context) {
 // @Param dtu_id query string false "dtu_id"
 // @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
 // @Router /api/bm1/battery/batterylist [get]
-// @Security Bearer
+// @john wang
 func GetBatteryLocation(c *gin.Context) {
 	var data batterymanage.BatteryMoveInfo
 	var err error

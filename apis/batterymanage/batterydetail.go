@@ -14,7 +14,7 @@ var TIME_LAYOUT = "2006-01-02 15:04:05"
 // @Param Pkg_id query string false "Pkg_id"
 // @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
 // @Router /api/v1/post [get]
-// @Security Bearer
+// @john wang
 func GetBatteryDetail(c *gin.Context) {
 	var data batterymanage.BatteryDetailInfo
 	var err error
