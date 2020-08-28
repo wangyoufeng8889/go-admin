@@ -144,6 +144,14 @@ type DtuDetailInfo struct {
 	Dtu_errNbr   uint8    `json:"dtu_errNbr" gorm:"Type：uint8"`
 	Dtu_errCode   uint16    `json:"dtu_errCode" gorm:"Type：uint16"`
 
+	//Dtu_paraSetReg
+	Dtu_pkgInfoReportPeriod   uint16    `json:"dtu_pkgInfoReportPeriod" gorm:"Type：uint16"`
+	Dtu_remoteLockCar   uint16    `json:"dtu_remoteLockCar" gorm:"Type：uint16"`
+	Dtu_voiceTipsOnOff   uint8    `json:"dtu_voiceTipsOnOff" gorm:"Type：uint8"`
+	Dtu_voiceTipsThresholdValue   uint8    `json:"dtu_voiceTipsThresholdValue" gorm:"Type：uint8"`
+	Dtu_voiceTipsDownBulk   uint8    `json:"dtu_voiceTipsDownBulk" gorm:"Type：uint8"`
+	Dtu_otaIP      string `json:"dtu_otaIP" gorm:"size:20;"`
+
 	//Bms_specInfo
 	Pkg_count   uint8    `json:"pkg_count" gorm:"Type：uint8"`
 	Pkg_type   uint8    `json:"pkg_type" gorm:"Type：uint8"`
@@ -157,14 +165,6 @@ type DtuDetailInfo struct {
 	Bms_errCode   uint32    `json:"bms_errCode" gorm:"Type：uint32"`
 	Bms_voltage   uint16    `json:"bms_voltage" gorm:"Type：uint16"`
 	Bms_current	  uint16  `json:"bms_current" gorm:"Type：uint16"`
-
-	//Dtu_paraSetReg
-	Dtu_pkgInfoReportPeriod   uint16    `json:"dtu_pkgInfoReportPeriod" gorm:"Type：uint16"`
-	Dtu_remoteLockCar   uint16    `json:"dtu_remoteLockCar" gorm:"Type：uint16"`
-	Dtu_voiceTipsOnOff   uint8    `json:"dtu_voiceTipsOnOff" gorm:"Type：uint8"`
-	Dtu_voiceTipsThresholdValue   uint8    `json:"dtu_voiceTipsThresholdValue" gorm:"Type：uint8"`
-	Dtu_voiceTipsDownBulk   uint8    `json:"dtu_voiceTipsDownBulk" gorm:"Type：uint8"`
-	Dtu_otaIP      string `json:"dtu_otaIP" gorm:"size:20;"`
 
 	DataScope  string `json:"dataScope" gorm:"-"`
 	models.BaseModel

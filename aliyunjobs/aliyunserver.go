@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
 	"go-admin/tools/config"
 	"pack.ag/amqp"
 	"strings"
@@ -25,6 +26,7 @@ const iotInstanceId = ""
 //建议使用机器UUID、MAC地址、IP等唯一标识等作为clientId。便于您区分识别不同的客户端。
 var clientId string
 var messageChan chan ModbusMessage
+var AliyunClient *sdk.Client
 func AliyunServerRun() {
 	uid = config.AliyunConfig.Uid
 	accessKey = config.AliyunConfig.AccessKey
@@ -48,6 +50,13 @@ func AliyunServerRun() {
 		userName:userName,
 		password:password,
 	}
+
+	AliyunClient, err := sdk.NewClientWithAccessKey(region ,accessKey,accessSecret)
+	if err != nil {
+		// Handle exceptions
+		panic(err)
+	}
+	fmt.Println(AliyunClient)
 
 	//如果需要做接受消息通信或者取消操作，从Background衍生context。
 	ctx := context.Background()
