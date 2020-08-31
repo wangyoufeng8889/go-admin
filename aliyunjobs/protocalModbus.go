@@ -199,8 +199,8 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_specinfo.Pkg_manufactureDate=time.Date(manufactureyear,time.Month(uint8(reg[24]>>8)),int(uint8(reg[24])),0,0,0,0,loc)
 	bms_specinfo.Bms_hardVer=uint8(reg[25]>>8)
 	bms_specinfo.Bms_softVer=uint8(reg[25])
-	data1 := reg[26]/0xFF
-	data2 := reg[26]%0xFF
+	data1 := reg[26]/0x100
+	data2 := reg[26]%0x100
 	bms_specinfo.Bms_protocolVer =  fmt.Sprintf("%d.%02d",data1,data2)
 	bms_specinfotemp := bms_specinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_specInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_specinfotemp).Error;err != nil {

@@ -8,7 +8,7 @@ import (
 type Bms_cellInfoLog struct {
 	Bms_cellInfoLogId     int    `json:"bms_cellInfoLogId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
 	Dtu_uptime time.Time  `json:"dtu_uptime"`
-	Pkg_id   string `json:"pkg_id" gorm:"size:20;primary_key;unique;not null;"`
+	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
 	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
 	Bms_cellVoltage1   uint16    `json:"bms_cellVoltage1" gorm:"Type：uint16"`
 	Bms_cellVoltage2   uint16    `json:"bms_cellVoltage2" gorm:"Type：uint16"`
