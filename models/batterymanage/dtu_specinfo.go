@@ -212,12 +212,12 @@ func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
 				"user_dtu_statusinfo.dtu_err_nbr",
 				"user_dtu_statusinfo.dtu_err_code",
 
-				"user_dtu_paraSetReg.dtu_pkg_info_report_period",
-				"user_dtu_paraSetReg.dtu_remote_lock_car",
-				"user_dtu_paraSetReg.dtu_voice_tips_on_off",
-				"user_dtu_paraSetReg.dtu_voice_tips_threshold_value",
-				"user_dtu_paraSetReg.dtu_voice_tips_down_bulk",
-				"user_dtu_paraSetReg.dtu_ota_iP",
+				"user_dtu_parasetreg.dtu_pkg_info_report_period",
+				"user_dtu_parasetreg.dtu_remote_lock_car",
+				"user_dtu_parasetreg.dtu_voice_tips_on_off",
+				"user_dtu_parasetreg.dtu_voice_tips_threshold_value",
+				"user_dtu_parasetreg.dtu_voice_tips_down_bulk",
+				"user_dtu_parasetreg.dtu_ota_iP",
 
 				"user_bms_statusinfo.bms_charge_status",
 				"user_bms_statusinfo.bms_soc",
@@ -255,12 +255,12 @@ func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
 				"user_dtu_statusinfo.dtu_err_nbr",
 				"user_dtu_statusinfo.dtu_err_code",
 
-				"user_dtu_paraSetReg.dtu_pkg_info_report_period",
-				"user_dtu_paraSetReg.dtu_remote_lock_car",
-				"user_dtu_paraSetReg.dtu_voice_tips_on_off",
-				"user_dtu_paraSetReg.dtu_voice_tips_threshold_value",
-				"user_dtu_paraSetReg.dtu_voice_tips_down_bulk",
-				"user_dtu_paraSetReg.dtu_ota_iP",})
+				"user_dtu_parasetreg.dtu_pkg_info_report_period",
+				"user_dtu_parasetreg.dtu_remote_lock_car",
+				"user_dtu_parasetreg.dtu_voice_tips_on_off",
+				"user_dtu_parasetreg.dtu_voice_tips_threshold_value",
+				"user_dtu_parasetreg.dtu_voice_tips_down_bulk",
+				"user_dtu_parasetreg.dtu_ota_iP",})
 			table = table.Joins("LEFT JOIN user_dtu_statusinfo ON user_dtu_specinfo.dtu_id=user_dtu_statusinfo.dtu_id").
 				Joins("LEFT JOIN user_dtu_parasetreg ON user_dtu_specinfo.dtu_id=user_dtu_parasetreg.dtu_id")
 		}
@@ -276,7 +276,7 @@ func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
 	var count int
 	table = table.Find(&doc)
 	if table.Error!= nil {
-		return nil, 0, err
+		return nil, 0, table.Error
 	}
 	if e.Dtu_specInfoId != 0 {
 		table = table.Where("dtu_spec_info_id = ?", e.Dtu_specInfoId)

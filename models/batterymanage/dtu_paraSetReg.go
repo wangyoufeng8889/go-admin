@@ -19,5 +19,5 @@ type Dtu_paraSetReg struct {
 	models.BaseModel
 }
 func (Dtu_paraSetReg) TableName() string {
-	return "user_dtu_paraSetReg"
+	return "user_dtu_parasetreg"
 }

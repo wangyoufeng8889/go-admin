@@ -59,6 +59,6 @@ type Bms_paraSetReg struct {
 	models.BaseModel
 }
 func (Bms_paraSetReg) TableName() string {
-	return "user_bms_paraSetReg"
+	return "user_bms_parasetreg"
 }
 
