@@ -108,7 +108,7 @@ func (e *DtuListInfo) Getdtu_listinfo(pageSize int, pageIndex int) ([]DtuListInf
 	if err := table.Order("dtu_spec_info_id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error; err != nil {
 		return nil, 0, err
 	}
-	table.Where("`deleted_at` IS NULL").Count(&count)
+	table.Where("user_dtu_specinfo.deleted_at IS NULL").Count(&count)
 	return doc, count, nil
 }
 
@@ -175,15 +175,15 @@ func (DtuDetailInfo) TableName() string {
 }
 
 //电池列表
-func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
+func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo, error) {
 	if e.Dtu_id == "" {
-		return nil, 0, errors.New("no dtuid")
+		return nil, errors.New("no dtuid")
 	}
 	var doc []DtuDetailInfo
 	table := orm.Eloquent.Table(e.TableName())
 	var dtu_pkg_bind Dtu_specInfo
 	if err:= orm.Eloquent.Table("user_dtu_specinfo").Where("user_dtu_specinfo.dtu_id = ?", e.Dtu_id).First(&dtu_pkg_bind).Error;err!=nil{
-		return nil, 0, errors.New("no dtuid")
+		return nil, errors.New("no dtuid")
 	}else {
 		if dtu_pkg_bind.Pkg_id != "" {
 			table = table.Select([]string{"user_dtu_specinfo.dtu_spec_info_id",
@@ -271,21 +271,20 @@ func (e *DtuDetailInfo) GetDtuDetailInfo() ([]DtuDetailInfo,int, error) {
 	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
 	table, err := dataPermission.GetDataScope(e.TableName(), table)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
-	var count int
 	table = table.Find(&doc)
 	if table.Error!= nil {
-		return nil, 0, table.Error
+		return nil, table.Error
 	}
 	if e.Dtu_specInfoId != 0 {
 		table = table.Where("dtu_spec_info_id = ?", e.Dtu_specInfoId)
 	}
 
 	table = table.Where("user_dtu_specinfo.dtu_id = ?", e.Dtu_id).Where("user_dtu_specinfo.deleted_at IS NULL")
-	if err := table.First(&doc).Count(&count).Error; err != nil {
-		return nil, 0, err
+	if err := table.First(&doc).Error; err != nil {
+		return nil, err
 	}
 
-	return doc, count, nil
+	return doc,nil
 }

@@ -101,7 +101,7 @@ func (e *BatteryListInfo) GetBatteryListInfo(pageSize int, pageIndex int) ([]Bat
 	if err := table.Order("bms_spec_info_id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error; err != nil {
 		return nil, 0, err
 	}
-	table.Where("`deleted_at` IS NULL").Count(&count)
+	table.Where("user_bms_specinfo.deleted_at IS NULL").Count(&count)
 	return doc, count, nil
 }
 func (e *Bms_specInfo) BatchDelete(id []int) (Result bool, err error) {
@@ -257,9 +257,9 @@ func (BatteryDetailInfo) TableName() string {
 	return "user_bms_specinfo"
 }
 //电池列表
-func (e *BatteryDetailInfo) GetBatteryDetailInfo() ([]BatteryDetailInfo,int, error) {
+func (e *BatteryDetailInfo) GetBatteryDetailInfo() ([]BatteryDetailInfo, error) {
 	if e.Pkg_id == "" {
-		return nil, 0, errors.New("no pkgid")
+		return nil, errors.New("no pkgid")
 	}
 	var doc []BatteryDetailInfo
 	table := orm.Eloquent.Table(e.TableName())
@@ -530,23 +530,22 @@ func (e *BatteryDetailInfo) GetBatteryDetailInfo() ([]BatteryDetailInfo,int, err
 	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
 	table, err := dataPermission.GetDataScope(e.TableName(), table)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
-	var count int
 	table = table.Find(&doc)
 	if table.Error!= nil {
-		return nil, 0, table.Error
+		return nil, table.Error
 	}
 	if e.Bms_specInfoId != 0 {
 		table = table.Where("bms_spec_info_id = ?", e.Bms_specInfoId)
 	}
 
 	table = table.Where("user_bms_specinfo.pkg_id = ?", e.Pkg_id).Where("user_bms_specinfo.deleted_at IS NULL")
-	if err := table.First(&doc).Count(&count).Error; err != nil {
-		return nil, 0, err
+	if err := table.First(&doc).Error; err != nil {
+		return nil, err
 	}
 
-	return doc, count, nil
+	return doc, nil
 }
 
 

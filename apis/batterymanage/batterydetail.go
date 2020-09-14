@@ -1,7 +1,6 @@
 package batterymanage
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-admin/models/batterymanage"
 	"go-admin/tools"
@@ -25,8 +24,7 @@ func GetBatteryDetail(c *gin.Context) {
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result,count, err := data.GetBatteryDetailInfo()
-	fmt.Println(count)
+	result, err := data.GetBatteryDetailInfo()
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }

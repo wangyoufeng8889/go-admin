@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"go-admin/global"
 	"go-admin/tools/config"
 	"pack.ag/amqp"
 	"strings"
@@ -56,11 +57,11 @@ func AliyunServerRun() {
 		// Handle exceptions
 		panic(err)
 	}
-	fmt.Println(AliyunClient)
+	global.Logger.Info(AliyunClient)
 
 	//如果需要做接受消息通信或者取消操作，从Background衍生context。
 	ctx := context.Background()
-	fmt.Println("start run aluyun amqp server")
+	global.Logger.Info("start run aluyun amqp server")
 	//初始化channel
 	messageChan = make(chan ModbusMessage,100)
 	amqpManager.startReceiveMessage(ctx)
@@ -71,7 +72,7 @@ func (am *AmqpManager) processMessage(message *amqp.Message) {
 	//fmt.Printf("topic=%s\r\n",message.ApplicationProperties["topic"])
 	//fmt.Printf("generateTime=%d\r\n",message.ApplicationProperties["generateTime"])
 
-	//fmt.Println("data received:", string(message.GetData()), " properties:", message.ApplicationProperties)
+	//global.Logger.Info("data received:", string(message.GetData()), " properties:", message.ApplicationProperties)
 	//1、解析产品ID 设备ID topic
 
 	var modbusMessage ModbusMessage
@@ -98,7 +99,7 @@ func (am *AmqpManager) processMessage(message *amqp.Message) {
 		if err:=json.Unmarshal(message.GetData(),&messagePayload);err!=nil{
 			fmt.Println("err=",err)
 		}
-		fmt.Println(messagePayload.Status)
+		global.Logger.Info(messagePayload.Status)
 		if messagePayload.Status == "offline" {
 			modbusMessage.Payload = []byte{0}
 		}else {
@@ -120,7 +121,7 @@ func (am *AmqpManager) processMessage(message *amqp.Message) {
 		if err:=json.Unmarshal(message.GetData(),&messagePayload);err!=nil{
 			fmt.Println("err=",err)
 		}
-		//fmt.Println(messagePayload.Message)
+		//global.Logger.Info(messagePayload.Message)
 		bytePayload,err:=hex.DecodeString(messagePayload.Message)
 		if err!=nil {
 			fmt.Println(err)
@@ -169,7 +170,7 @@ func (am *AmqpManager) startReceiveMessage(ctx context.Context)  {
 			go am.processMessage(message)
 			message.Accept()
 		} else {
-			fmt.Println("amqp receive data error:", err)
+			global.Logger.Info("amqp receive data error:", err)
 
 			//如果是主动取消，则退出程序。
 			select {
@@ -208,10 +209,10 @@ func (am *AmqpManager) generateReceiverWithRetry(ctx context.Context) error {
 			if duration < maxDuration {
 				duration *= 2
 			}
-			fmt.Println("amqp connect retry,times:", times, ",duration:", duration)
+			global.Logger.Info("amqp connect retry,times:", times, ",duration:", duration)
 			times ++
 		} else {
-			fmt.Println("amqp connect init success")
+			global.Logger.Info("amqp connect init success")
 			return nil
 		}
 	}

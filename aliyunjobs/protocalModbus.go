@@ -3,6 +3,7 @@ package aliyunjobs
 import (
 	"fmt"
 	"github.com/iancoleman/strcase"
+	"go-admin/global"
 	orm "go-admin/global"
 	"go-admin/models/batterymanage"
 	"go-admin/tools/gps"
@@ -40,18 +41,18 @@ func init()  {
 func ModbusServer(msg chan ModbusMessage) {
 	message := <-msg
 	if message.Topic == "/user/update" {
-		fmt.Println(message.DtuID)
+		global.Logger.Info(message.DtuID)
 		//addr, reglen, reg, err := modbusParseTcp(message)
 		addr, reglen, reg, err := modbusParseTcp(message)
 		if err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 			return
 		}
-		fmt.Println("ModbusServer=", addr, reglen, reg)
+		global.Logger.Info("ModbusServer=", addr, reglen, reg)
 	}else if message.Topic == "/as/mqtt/status"{
 		aliyunOnOffprocess(message)
 	}else {
-		fmt.Println("ModbusServer topic is err=",message.Topic)
+		global.Logger.Info("ModbusServer topic is err=",message.Topic)
 	}
 }
 func Struct2Map(obj interface{},ingore []int ) map[string]interface{} {
@@ -76,13 +77,13 @@ func aliyunOnOffprocess(msg ModbusMessage)  {
 	dtu_specInfotemp = dtu_specInfo
 	//orm.Eloquent.Create(&dtu_aliyun)
 	if err:= orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).FirstOrCreate(&dtu_specInfotemp).Error;err!=nil{
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		dtu_aliyunmap:=Struct2Map(dtu_specInfo,[]int{0,2,3,4,5,6,7,8,9,10,11,12,13,-3,-2,-1})
 		if err := orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id:msg.DtuID}).Updates(dtu_aliyunmap).Error;err!=nil{
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
-		fmt.Println("dtu=",msg.DtuID,"|aliyun=",dtu_specInfo.Dtu_aliyunStatus,time.Now())
+		global.Logger.Info("dtu=",msg.DtuID,"|aliyun=",dtu_specInfo.Dtu_aliyunStatus,time.Now())
 	}
 }
 func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err error)  {
@@ -142,7 +143,7 @@ func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err
 		case 30700:
 			break
 		default:
-			fmt.Println("default 30xxx")
+			global.Logger.Info("default 30xxx")
 			break
 		}
 	}else if cmd == 0x10 {
@@ -204,11 +205,11 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_specinfo.Bms_protocolVer =  fmt.Sprintf("%d.%02d",data1,data2)
 	bms_specinfotemp := bms_specinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_specInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_specinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_specinfomap:=Struct2Map(bms_specinfo,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Bms_specInfo{}).Where(&batterymanage.Bms_specInfo{Pkg_id: pkg_id}).Updates(bms_specinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 	if reglen == 72 {
@@ -221,7 +222,7 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		regTemp, _ = sliceUin16Tobyte(reg[61:71])
 		dtu_imei:= string(regTemp)
 		if dtu_id != msg.DtuID {
-			fmt.Println("dtu id is err")
+			global.Logger.Info("dtu id is err")
 		}else {
 			Dtu_Pkg_map[dtu_id]=pkg_id
 		}
@@ -244,11 +245,11 @@ func modbusProcess30000(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_specinfo.Dtu_bmsBindStatus=uint8(reg[71])
 		dtu_specinfotemp:=dtu_specinfo
 		if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}else {
 			dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-4,-3,-2,-1})
 			if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
-				fmt.Println(err)
+				global.Logger.Info(err)
 			}
 		}
 	}
@@ -264,7 +265,7 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_imei:= string(regTemp)
 	if dtu_id != msg.DtuID {
 		//需要加上错误检测
-		fmt.Println("dtu id is not aliyun id")
+		global.Logger.Info("dtu id is not aliyun id")
 	}else {
 		Dtu_Pkg_map[dtu_id]="0"
 	}
@@ -301,11 +302,11 @@ func modbusProcess30027(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	}
 	dtu_specinfotemp:=dtu_specinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).FirstOrCreate(&dtu_specinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		dtu_specinfomap:=Struct2Map(dtu_specinfo,[]int{0,-4,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Dtu_specInfo{}).Where(&batterymanage.Dtu_specInfo{Dtu_id: dtu_id}).Updates(dtu_specinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }
@@ -366,15 +367,15 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_statusinfolog.Bms_otaBufStatus=bms_statusinfo.Bms_otaBufStatus
 	bms_statusinfolog.Bms_magneticCheck=bms_statusinfo.Bms_magneticCheck
 	if err:=orm.Eloquent.Create(&bms_statusinfolog).Error;err!=nil{
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}
 	bms_statusinfotemp:=bms_statusinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_statusInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_statusinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_statusinfomap:=Struct2Map(bms_statusinfo,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Bms_statusInfo{}).Where(&batterymanage.Bms_statusInfo{Pkg_id: pkg_id}).Updates(bms_statusinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 	if reglen == 25 {
@@ -431,15 +432,15 @@ func modbusProcess30100(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_statusinfolog.Dtu_errNbr = dtu_statusinfo.Dtu_errNbr
 		dtu_statusinfolog.Dtu_errCode = dtu_statusinfo.Dtu_errCode
 		if err:=orm.Eloquent.Create(&dtu_statusinfolog).Error;err!=nil{
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 		dtu_statusinfotemp:=dtu_statusinfo
 		if err:=orm.Eloquent.Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_statusinfotemp).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}else {
 			dtu_statusinfomap:=Struct2Map(dtu_statusinfo,[]int{0,-3,-2,-1})
 			if err:=orm.Eloquent.Model(batterymanage.Dtu_statusInfo{}).Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).Updates(dtu_statusinfomap).Error;err != nil {
-				fmt.Println(err)
+				global.Logger.Info(err)
 			}
 		}
 	}
@@ -449,7 +450,7 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res:= Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -508,17 +509,17 @@ func modbusProcess30113(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_statusinfolog.Dtu_errNbr = dtu_statusinfo.Dtu_errNbr
 	dtu_statusinfolog.Dtu_errCode = dtu_statusinfo.Dtu_errCode
 	if err:=orm.Eloquent.Create(&dtu_statusinfolog).Error;err!=nil{
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}
 
 	//orm.Eloquent.Create(&dtu_statusinfo)
 	dtu_statusinfotemp:=dtu_statusinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_statusinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		dtu_statusinfomap:=Struct2Map(dtu_statusinfo,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Dtu_statusInfo{}).Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).Updates(dtu_statusinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }
@@ -528,7 +529,7 @@ func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -546,11 +547,11 @@ func modbusProcess30123(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	//orm.Eloquent.Create(&dtu_statusinfo)
 	dtu_statusinfotemp:=dtu_statusinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_statusinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		dtu_statusinfomap:=Struct2Map(dtu_statusinfo,[]int{0,2,4,5,6,7,8,9,10,11,12,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Dtu_statusInfo{}).Where(&batterymanage.Dtu_statusInfo{Dtu_id: msg.DtuID}).Updates(dtu_statusinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }
@@ -559,7 +560,7 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -615,15 +616,15 @@ func modbusProcess30200(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_cellinfolog.Bms_cellVoltage19= bms_cellinfo.Bms_cellVoltage19
 	bms_cellinfolog.Bms_cellVoltage20= bms_cellinfo.Bms_cellVoltage20
 	if err:=orm.Eloquent.Create(&bms_cellinfolog).Error;err!=nil{
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}
 	bms_cellinfotemp:=bms_cellinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_cellInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_cellinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_cellinfomap:=Struct2Map(bms_cellinfo,[]int{0,2,4,5,6,7,8,9,10,11,12,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Bms_cellInfo{}).Where(&batterymanage.Bms_cellInfo{Pkg_id: pkg_id}).Updates(bms_cellinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }
@@ -632,7 +633,7 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -660,15 +661,15 @@ func modbusProcess30300(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_temperatureinfolog.Bms_temperature5= bms_temperatureinfo.Bms_temperature5
 	bms_temperatureinfolog.Bms_temperature6= bms_temperatureinfo.Bms_temperature6
 	if err:=orm.Eloquent.Create(&bms_temperatureinfolog).Error;err!=nil{
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}
 	bms_temperatureinfotemp:=bms_temperatureinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_temperatureInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_temperatureinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_temperatureinfomap:=Struct2Map(bms_temperatureinfo,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Bms_temperatureInfo{}).Where(&batterymanage.Bms_temperatureInfo{Pkg_id: pkg_id}).Updates(bms_temperatureinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }
@@ -677,7 +678,7 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -698,11 +699,11 @@ func modbusProcess30500(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_historyinfo.Pkg_nbrofChargingCycle= uint16(reg[4])
 	bms_historyinfotemp:=bms_historyinfo
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_historyInfo{Pkg_id: pkg_id}).FirstOrCreate(&bms_historyinfotemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_historyinfomap:=Struct2Map(bms_historyinfo,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Bms_historyInfo{}).Where(&batterymanage.Bms_historyInfo{Pkg_id: pkg_id}).Updates(bms_historyinfomap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }
@@ -711,7 +712,7 @@ func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -768,11 +769,11 @@ func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	bms_paraSetReg.Bms_enableChargeStatus= uint16(reg[44])
 	bms_paraSetRegtemp :=bms_paraSetReg
 	if err:=orm.Eloquent.Where(&batterymanage.Bms_paraSetReg{Pkg_id: pkg_id}).FirstOrCreate(&bms_paraSetRegtemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_paraSetRegmap:=Struct2Map(bms_paraSetReg,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Bms_paraSetReg{}).Where(&batterymanage.Bms_paraSetReg{Pkg_id: pkg_id}).Updates(bms_paraSetRegmap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 	if reglen == 61 {
@@ -790,11 +791,11 @@ func modbusProcess30600(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		dtu_paraSetReg.Dtu_otaIP=dtu_otaIP
 		dtu_paraSetRegtemp:=dtu_paraSetReg
 		if err:=orm.Eloquent.Where(&batterymanage.Dtu_paraSetReg{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_paraSetRegtemp).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}else {
 			bms_paraSetRegmap:=Struct2Map(dtu_paraSetReg,[]int{0,-3,-2,-1})
 			if err:=orm.Eloquent.Model(batterymanage.Dtu_paraSetReg{}).Where(&batterymanage.Dtu_paraSetReg{Dtu_id: msg.DtuID}).Updates(bms_paraSetRegmap).Error;err != nil {
-				fmt.Println(err)
+				global.Logger.Info(err)
 			}
 		}
 	}
@@ -804,7 +805,7 @@ func modbusProcess30647(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	if len(pkg_id)<5{
 		res := Dtu_BMS_map_Init(msg)
 		if res != true {
-			fmt.Println("find no bmsID")
+			global.Logger.Info("find no bmsID")
 			pkg_id=""
 		}else {
 			pkg_id= Dtu_Pkg_map[msg.DtuID]
@@ -824,11 +825,11 @@ func modbusProcess30647(reg []uint16,reglen uint8,msg ModbusMessage)  {
 	dtu_paraSetReg.Dtu_otaIP= dtu_otaIP
 	dtu_paraSetRegtemp:=dtu_paraSetReg
 	if err:=orm.Eloquent.Where(&batterymanage.Dtu_paraSetReg{Dtu_id: msg.DtuID}).FirstOrCreate(&dtu_paraSetRegtemp).Error;err != nil {
-		fmt.Println(err)
+		global.Logger.Info(err)
 	}else {
 		bms_paraSetRegmap:=Struct2Map(dtu_paraSetReg,[]int{0,-3,-2,-1})
 		if err:=orm.Eloquent.Model(batterymanage.Dtu_paraSetReg{}).Where(&batterymanage.Dtu_paraSetReg{Dtu_id: msg.DtuID}).Updates(bms_paraSetRegmap).Error;err != nil {
-			fmt.Println(err)
+			global.Logger.Info(err)
 		}
 	}
 }

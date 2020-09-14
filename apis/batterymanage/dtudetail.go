@@ -1,7 +1,6 @@
 package batterymanage
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-admin/models/batterymanage"
 	"go-admin/tools"
@@ -24,8 +23,7 @@ func GetDtuDetail(c *gin.Context) {
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result,count, err := data.GetDtuDetailInfo()
-	fmt.Println(count)
+	result, err := data.GetDtuDetailInfo()
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }
