@@ -128,3 +128,65 @@ func (e *BatteryMoveInfo) GetBatteryLocationInfo() ([]BatteryMoveInfo,int, error
 	}
 	return doc, count, nil
 }
+
+type DtuCSQInfo struct {
+	//Dtu_statusInfoLog
+	Dtu_statusInfoLogId     int    `json:"dtu_statusInfoLogId" gorm:"size:10;primary_key;AUTO_INCREMENT"`
+	Dtu_uptime time.Time  `json:"dtu_uptime"`
+	Dtu_id      string `json:"dtu_id" gorm:"size:20;"`
+	Pkg_id   string `json:"pkg_id" gorm:"size:20;"`
+	Dtu_csq   uint8    `json:"dtu_csq" gorm:"Type：uint8"`
+	Dtu_locateMode   uint8    `json:"dtu_locateMode" gorm:"Type：uint8"`
+	Dtu_pluginVoltage   uint8    `json:"dtu_pluginVoltage" gorm:"Type：uint8"`
+	Dtu_selfInVoltage   uint8    `json:"dtu_selfInVoltage" gorm:"Type：uint8"`
+	Dtu_errNbr   uint8    `json:"dtu_errNbr" gorm:"Type：uint8"`
+	Dtu_errCode   uint16    `json:"dtu_errCode" gorm:"Type：uint16"`
+	//无关数据库
+	DataScope  string `json:"dataScope" gorm:"-"`
+	models.BaseModel
+}
+func (DtuCSQInfo) TableName() string {
+	return "user_dtu_statusinfolog"
+}
+func (e *DtuCSQInfo) GetDtuCSQInfo(starttime time.Time, endtime time.Time) ([]DtuCSQInfo,int, error) {
+	var doc []DtuCSQInfo
+
+	table := orm.Eloquent.Table(e.TableName()).Select([]string{"user_dtu_statusinfolog.dtu_status_info_log_id",
+		"user_dtu_statusinfolog.dtu_uptime",
+		"user_dtu_statusinfolog.pkg_id",
+		"user_dtu_statusinfolog.dtu_id",
+		"user_dtu_statusinfolog.dtu_csq",
+		"user_dtu_statusinfolog.dtu_locate_mode",
+		"user_dtu_statusinfolog.dtu_plugin_voltage",
+		"user_dtu_statusinfolog.dtu_self_in_voltage",
+		"user_dtu_statusinfolog.dtu_err_nbr",
+		"user_dtu_statusinfolog.dtu_err_code"})
+
+	// 数据权限控制
+	dataPermission := new(models.DataPermission)
+	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
+	table, err := dataPermission.GetDataScope(e.TableName(), table)
+	if err != nil {
+		return nil, 0, err
+	}
+	var count int
+	table = table.Order("user_dtu_statusinfolog.dtu_status_info_log_id").Find(&doc)
+	if table.Error != nil {
+		return nil, 0, err
+	}
+	if e.Dtu_statusInfoLogId != 0 {
+		table = table.Where("user_dtu_statusinfolog.dtu_status_info_log_id = ?", e.Dtu_statusInfoLogId)
+	}
+
+	if e.Pkg_id != "" {
+		table = table.Where("user_dtu_statusinfolog.pkg_id = ?", e.Pkg_id)
+	}
+	if e.Dtu_id != "" {
+		table = table.Where("user_dtu_statusinfolog.dtu_id = ?", e.Dtu_id)
+	}
+	table = table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+		return nil, 0, err
+	}
+	return doc, count, nil
+}

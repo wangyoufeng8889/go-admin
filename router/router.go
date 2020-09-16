@@ -63,7 +63,7 @@ func registerUserBatterydetailRouter(user *gin.RouterGroup, authMiddleware *jwt.
 	battertlist := user.Group("/batterydetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		battertlist.GET("", batterymanage.GetBatteryDetail)//电池详情
-		//battertlist.GET("/bms_statusinfo", batterymanage.GetBatteryDetail_bms_statusinfo)
+		battertlist.GET("/batterysoc", batterymanage.GetBatterySOC)//电池SOC
 	}
 }
 func registerserBatteryMoveRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
@@ -84,5 +84,6 @@ func registerUserDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJ
 	battertlist := user.Group("/dtudetail").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		battertlist.GET("", batterymanage.GetDtuDetail)//dtu详情
+		battertlist.GET("/dtucsq", batterymanage.GetDtuCSQ)//电池SOC
 	}
 }

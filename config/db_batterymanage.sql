@@ -22,40 +22,37 @@ INSERT INTO sys_dict_data VALUES (39, 0, '2G', '2', 'sys_dtu_type', '', '', '', 
 INSERT INTO sys_dict_data VALUES (40, 0, '4G-CAT4', '4', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_CAT1', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 INSERT INTO sys_dict_data VALUES (41, 0, '4G-CAT1', '6', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_CAT4', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 
-
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/v1/getinfo', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/v1/getinfo', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/v1/menurole', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/v1/menurole', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dashboard', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dashboard', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dashboard', 'GET', NULL, NULL, NULL);
-
-
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterylist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterylist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterylist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterylist/:bms_specinfoId', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterylist/:bms_specinfoId', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterylist/:bms_specinfoId', 'DELETE', NULL, NULL, NULL);
-
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterydetail', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterydetail', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterydetail', 'GET', NULL, NULL, NULL);
-
+INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterydetail/batterysoc', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterydetail/batterysoc', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterydetail/batterysoc', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtulist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtulist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtulist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtulist/:dtu_specInfoId', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtulist/:dtu_specInfoId', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtulist/:dtu_specInfoId', 'DELETE', NULL, NULL, NULL);
-
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterymove', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterymove', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterymove', 'GET', NULL, NULL, NULL);
-
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/batterymove/location', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/batterymove/location', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/batterymove/location', 'GET', NULL, NULL, NULL);
-
-
-
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtudetail', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtudetail', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtudetail', 'GET', NULL, NULL, NULL);
@@ -65,10 +62,9 @@ INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtudetail/dtu_s
 INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtudetail/dtu_specinfo', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtudetail/dtu_specinfo', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtudetail/dtu_specinfo', 'GET', NULL, NULL, NULL);
-INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtudetail/dtu_aliyun', 'GET', NULL, NULL, NULL);
-INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtudetail/dtu_aliyun', 'GET', NULL, NULL, NULL);
-INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtudetail/dtu_aliyun', 'GET', NULL, NULL, NULL);
-
+INSERT INTO casbin_rule VALUES ('p', 'admin', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
 
 INSERT INTO `sys_menu` VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', '', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
