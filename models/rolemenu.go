@@ -7,6 +7,7 @@ import (
 )
 
 type RoleMenu struct {
+	Id          int    `json:"Id" gorm:"primary_key;AUTO_INCREMENT"` // 编码
 	RoleId   int    `gorm:""`
 	MenuId   int    `gorm:""`
 	RoleName string `gorm:"size:128)"`

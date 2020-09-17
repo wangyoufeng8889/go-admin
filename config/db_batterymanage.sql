@@ -81,22 +81,22 @@ INSERT INTO sys_menu VALUES (502, '', '查看DTU', '', '', '/0/2/7/502', 'F', ''
 INSERT INTO sys_menu VALUES (503, '', '删除DTU', '', '', '/0/2/7/503', 'F', '', 'system:dtulist:remove', 7, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 
 
-INSERT INTO sys_role_menu VALUES (2, 4, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (2, 5, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (2, 6, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (2, 7, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (2, 8, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (2, 500, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (2, 502, 'common', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 4, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 5, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 6, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 7, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 8, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 500, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 501, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 502, 'admin', NULL, NULL);
-INSERT INTO sys_role_menu VALUES (1, 503, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (300,2, 4, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (301,2, 5, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (302,2, 6, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (303,2, 7, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (304,2, 8, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (305,2, 500, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (306,2, 502, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (307,1, 4, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (308,1, 5, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (309,1, 6, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (310,1, 7, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (311,1, 8, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (312,1, 500, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (313,1, 501, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (314,1, 502, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (315,1, 503, 'admin', NULL, NULL);
 
 INSERT INTO sys_user VALUES (3, 'john', '13688888888', 2, '', '', '0', 'ww@126.com', 1, 1, '1', '', 'dd', '0', '2020-09-17 15:10:57', '2020-09-17 15:10:57', NULL, 'john', '$2a$10$mAA7kc1nvxs5E3A7do9AZuhMMVNdnMNFPqNUjpgnukOgLM5gwFL6a');
 
