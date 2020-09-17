@@ -38,7 +38,7 @@ INSERT INTO casbin_rule VALUES (35,'p', 'admin', '/api/v1/dict/data/:id', 'GET',
 INSERT INTO casbin_rule VALUES (36,'p', 'admin', '/api/v1/dict/databytype/:id', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (37,'p', 'admin', '/api/v1/dict/data', 'POST', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (38,'p', 'admin', '/api/v1/dict/data/', 'PUT', NULL, NULL, NULL);
-INSERT INTO casbin_rule VALUES (39'p', 'admin', '/api/v1/dict/data/:id', 'DELETE', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (39,'p', 'admin', '/api/v1/dict/data/:id', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (40,'p', 'admin', '/api/v1/dict/typelist', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (41,'p', 'admin', '/api/v1/dict/type/:id', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (42,'p', 'admin', '/api/v1/dict/type', 'POST', NULL, NULL, NULL);
