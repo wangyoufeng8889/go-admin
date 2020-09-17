@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-admin/cmd"
+	"runtime"
 )
 
 // @title go-admin API
@@ -69,5 +70,7 @@ import (
 //}
 
 func main() {
+	cpuNbr:=runtime.NumCPU()
+	runtime.GOMAXPROCS(cpuNbr)
 	cmd.Execute()
 }

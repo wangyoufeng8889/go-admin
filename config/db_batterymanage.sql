@@ -22,6 +22,8 @@ INSERT INTO sys_dict_data VALUES (39, 0, '2G', '2', 'sys_dtu_type', '', '', '', 
 INSERT INTO sys_dict_data VALUES (40, 0, '4G-CAT4', '4', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_CAT1', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 INSERT INTO sys_dict_data VALUES (41, 0, '4G-CAT1', '6', 'sys_dtu_type', '', '', '', 0, '', '1', '', 'DTU_CAT4', '2020-03-15 18:38:42', '2020-03-15 18:38:42', NULL);
 
+INSERT INTO casbin_rule VALUES ('p', 'common', '/api/v1/logout', 'POST', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/v1/logout', 'POST', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/v1/getinfo', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/v1/getinfo', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES ('p', 'common', '/api/v1/menurole', 'GET', NULL, NULL, NULL);
@@ -67,10 +69,16 @@ INSERT INTO casbin_rule VALUES ('p', 'common', '/api/bm1/battery/dtudetail/dtucs
 INSERT INTO casbin_rule VALUES ('p', 'tester', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
 
 INSERT INTO `sys_menu` VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
-INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', '', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', 'system:batterylist:list', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (6, 'batterydetail', '电池详情', 'date', '/api/bm1/battery/batterydetail', '/0/4/6', 'C', '', '', 4, 1, '', '/batterydetail/index', 2, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (7, 'dtulist', 'DTU列表', 'component', '/api/bm1/battery/dtulist', '/0/4/7', 'C', '', '', 4, 1, '', '/dtulist/index', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (8, 'dtudetail', 'DTU详情', 'date', '/api/bm1/battery/dtudetail', '/0/4/8', 'C', '', '', 4, 1, '', '/dtudetail/index', 4, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+
+INSERT INTO sys_menu VALUES (500, '', '查看电池', '', '', '/0/2/5/500', 'F', '', 'system:batterylist:query', 5, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
+INSERT INTO sys_menu VALUES (501, '', '删除电池', '', '', '/0/2/5/501', 'F', '', 'system:batterylist:remove', 5, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
+
+INSERT INTO sys_menu VALUES (502, '', '查看DTU', '', '', '/0/2/7/502', 'F', '', 'system:dtulist:query', 7, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
+INSERT INTO sys_menu VALUES (503, '', '删除DTU', '', '', '/0/2/7/503', 'F', '', 'system:dtulist:remove', 7, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 
 
 INSERT INTO sys_role_menu VALUES (2, 4, 'common', NULL, NULL);
@@ -78,12 +86,19 @@ INSERT INTO sys_role_menu VALUES (2, 5, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (2, 6, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (2, 7, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (2, 8, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (2, 500, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (2, 502, 'common', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (1, 4, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (1, 5, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (1, 6, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (1, 7, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (1, 8, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (1, 500, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (1, 501, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (1, 502, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (1, 503, 'admin', NULL, NULL);
 
+INSERT INTO sys_user VALUES (3, 'john', '13688888888', 2, '', '', '0', 'ww@126.com', 1, 1, '1', '', 'dd', '0', '2020-09-17 15:10:57', '2020-09-17 15:10:57', NULL, 'john', '$2a$10$mAA7kc1nvxs5E3A7do9AZuhMMVNdnMNFPqNUjpgnukOgLM5gwFL6a');
 
 COMMIT;
 
