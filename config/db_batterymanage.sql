@@ -68,6 +68,14 @@ INSERT INTO casbin_rule VALUES (142,'p', 'admin', '/api/bm1/battery/dtudetail/dt
 INSERT INTO casbin_rule VALUES (143,'p', 'common', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (144,'p', 'tester', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
 
+INSERT INTO casbin_rule VALUES (145,'p', 'admin', '/api/bm1/battery/batterydetail/batterycell', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (146,'p', 'common', '/api/bm1/battery/batterydetail/batterycell', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (147,'p', 'tester', '/api/bm1/battery/batterydetail/batterycell', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (148,'p', 'admin', '/api/bm1/battery/batterydetail/batterytemper', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (149,'p', 'common', '/api/bm1/battery/batterydetail/batterytemper', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (150,'p', 'tester', '/api/bm1/battery/batterydetail/batterytemper', 'GET', NULL, NULL, NULL);
+
+
 INSERT INTO `sys_menu` VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', 'system:batterylist:list', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
 INSERT INTO `sys_menu` VALUES (6, 'batterydetail', '电池详情', 'date', '/api/bm1/battery/batterydetail', '/0/4/6', 'C', '', '', 4, 1, '', '/batterydetail/index', 2, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);

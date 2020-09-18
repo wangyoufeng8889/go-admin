@@ -1,7 +1,9 @@
 package batterymanage
 
 import (
+	orm "go-admin/global"
 	"go-admin/models"
+	"go-admin/tools"
 	"time"
 )
 
@@ -37,3 +39,35 @@ type Bms_cellInfoLog struct {
 func (Bms_cellInfoLog) TableName() string {
 	return "user_bms_cellinfolog"
 }
+func (e *Bms_cellInfoLog) GetBms_cellInfoLog(starttime time.Time, endtime time.Time) ([]Bms_cellInfoLog,int, error) {
+	var doc []Bms_cellInfoLog
+
+	table := orm.Eloquent.Select("*").Table(e.TableName())
+	// 数据权限控制
+	dataPermission := new(models.DataPermission)
+	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
+	table, err := dataPermission.GetDataScope(e.TableName(), table)
+	if err != nil {
+		return nil, 0, err
+	}
+	var count int
+	table = table.Order("user_bms_cellinfolog.bms_cell_info_log_id").Find(&doc)
+	if table.Error != nil {
+		return nil, 0, err
+	}
+	if e.Bms_cellInfoLogId != 0 {
+		table = table.Where("user_bms_cellinfolog.bms_cell_info_log_id = ?", e.Bms_cellInfoLogId)
+	}
+	if e.Pkg_id != "" {
+		table = table.Where("user_bms_cellinfolog.pkg_id = ?", e.Pkg_id)
+	}
+	if e.Dtu_id != "" {
+		table = table.Where("user_bms_cellinfolog.dtu_id = ?", e.Dtu_id)
+	}
+	table = table.Where("user_bms_cellinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+		return nil, 0, err
+	}
+	return doc, count, nil
+}
+

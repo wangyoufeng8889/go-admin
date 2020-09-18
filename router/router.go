@@ -64,6 +64,8 @@ func registerUserBatterydetailRouter(user *gin.RouterGroup, authMiddleware *jwt.
 	{
 		battertlist.GET("", batterymanage.GetBatteryDetail)//电池详情
 		battertlist.GET("/batterysoc", batterymanage.GetBatterySOC)//电池SOC
+		battertlist.GET("/batterycell", batterymanage.GetBatteryCell)//电池单体
+		battertlist.GET("/batterytemper", batterymanage.GetBatteryTemper)//电池温度
 	}
 }
 func registerserBatteryMoveRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
