@@ -75,12 +75,24 @@ INSERT INTO casbin_rule VALUES (148,'p', 'admin', '/api/bm1/battery/batterydetai
 INSERT INTO casbin_rule VALUES (149,'p', 'common', '/api/bm1/battery/batterydetail/batterytemper', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (150,'p', 'tester', '/api/bm1/battery/batterydetail/batterytemper', 'GET', NULL, NULL, NULL);
 
+INSERT INTO casbin_rule VALUES (151,'p', 'admin', '/api/bm1/otaupdate/firmwarelist', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (152,'p', 'common', '/api/bm1/otaupdate/firmwarelist', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (153,'p', 'tester', '/api/bm1/otaupdate/firmwarelist', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (154,'p', 'admin', '/api/bm1/otaupdate/firmwarelist/:ota_firmwareId', 'DELETE', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (155,'p', 'common', '/api/bm1/otaupdate/firmwarelist/:ota_firmwareId', 'DELETE', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (156,'p', 'tester', '/api/bm1/otaupdate/firmwarelist/:ota_firmwareId', 'DELETE', NULL, NULL, NULL);
 
-INSERT INTO `sys_menu` VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
-INSERT INTO `sys_menu` VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', 'system:batterylist:list', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
-INSERT INTO `sys_menu` VALUES (6, 'batterydetail', '电池详情', 'date', '/api/bm1/battery/batterydetail', '/0/4/6', 'C', '', '', 4, 1, '', '/batterydetail/index', 2, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
-INSERT INTO `sys_menu` VALUES (7, 'dtulist', 'DTU列表', 'component', '/api/bm1/battery/dtulist', '/0/4/7', 'C', '', '', 4, 1, '', '/dtulist/index', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
-INSERT INTO `sys_menu` VALUES (8, 'dtudetail', 'DTU详情', 'date', '/api/bm1/battery/dtudetail', '/0/4/8', 'C', '', '', 4, 1, '', '/dtudetail/index', 4, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+
+
+INSERT INTO sys_menu VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
+INSERT INTO sys_menu VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', 'system:batterylist:list', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+INSERT INTO sys_menu VALUES (6, 'batterydetail', '电池详情', 'date', '/api/bm1/battery/batterydetail', '/0/4/6', 'C', '', '', 4, 1, '', '/batterydetail/index', 2, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+INSERT INTO sys_menu VALUES (7, 'dtulist', 'DTU列表', 'component', '/api/bm1/battery/dtulist', '/0/4/7', 'C', '', '', 4, 1, '', '/dtulist/index', 3, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+INSERT INTO sys_menu VALUES (8, 'dtudetail', 'DTU详情', 'date', '/api/bm1/battery/dtudetail', '/0/4/8', 'C', '', '', 4, 1, '', '/dtudetail/index', 4, '1', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
+INSERT INTO sys_menu VALUES (15, 'otaupdate', '固件升级', 'form', '/api/bm1/otaupdate', '/0/15', 'M', '', '', 0, 1, '', 'Layout', 5, '0', '1', '1', '0', '2020-08-09 01:05:22', '2020-08-09 02:17:10', NULL);
+INSERT INTO sys_menu VALUES (16, 'firmwarelist', '固件列表', 'component', '/api/bm1/otaupdate/firmwarelist', '/0/15/1', 'C', '', 'system:firmwarelist:list', 15, 1, '', '/firmwarelist/index', 1, '0', '1', '1', '0', '2020-08-09 01:05:22', '2020-08-09 02:17:10', NULL);
+
+
 
 INSERT INTO sys_menu VALUES (500, '', '查看电池', '', '', '/0/2/5/500', 'F', '', 'system:batterylist:query', 5, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO sys_menu VALUES (501, '', '删除电池', '', '', '/0/2/5/501', 'F', '', 'system:batterylist:remove', 5, 0, '', '', 0, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
@@ -105,8 +117,14 @@ INSERT INTO sys_role_menu VALUES (312,1, 500, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (313,1, 501, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (314,1, 502, 'admin', NULL, NULL);
 INSERT INTO sys_role_menu VALUES (315,1, 503, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (316,2, 15, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (317,1, 15, 'admin', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (318,2, 16, 'common', NULL, NULL);
+INSERT INTO sys_role_menu VALUES (319,1, 16, 'admin', NULL, NULL);
 
 INSERT INTO sys_user VALUES (3, 'john', '13688888888', 2, '', '', '0', 'ww@126.com', 1, 1, '1', '', 'dd', '0', '2020-09-17 15:10:57', '2020-09-17 15:10:57', NULL, 'john', '$2a$10$mAA7kc1nvxs5E3A7do9AZuhMMVNdnMNFPqNUjpgnukOgLM5gwFL6a');
+
+INSERT INTO user_ota_firmware VALUES ('1', 'WanWeiBMS_4G_Luat_V0035_ASR1802_FLOAT_720D', '1.0.1', 'WanWeiBMS_4G_Luat_V0035_ASR1802_FLOAT_720D.bin', 'hello', '2020-09-17 15:10:57', '2020-09-17 15:10:57', NULL, NULL);
 
 COMMIT;
 

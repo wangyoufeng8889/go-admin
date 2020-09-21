@@ -33,17 +33,23 @@ func examplesNoCheckRoleRouter(r *gin.Engine) {
 // 需要认证的路由示例
 func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddleware) {
 	// 可根据业务需求来设置接口版本,bm1表示batterymanage1
-	bm1 := r.Group("/api/bm1/battery")
+	battery := r.Group("/api/bm1/battery")
 	// 空接口防止v1定义无使用报错
-	bm1.GET("/checkrole", nil)
+	battery.GET("/checkrole", nil)
 
 	// {{认证路由自动补充在此处请勿删除}}
-	registerUserBatterylistRouter(bm1, authMiddleware)
-	registerUserBatterydetailRouter(bm1, authMiddleware)
-	registerserBatteryMoveRouter(bm1, authMiddleware)
-	registerUserDTUlistRouter(bm1, authMiddleware)
-	registerUserDTUdetailRouter(bm1, authMiddleware)
-	registerUserBatteryDashboardRouter(bm1, authMiddleware)
+	registerUserBatterylistRouter(battery, authMiddleware)
+	registerUserBatterydetailRouter(battery, authMiddleware)
+	registerserBatteryMoveRouter(battery, authMiddleware)
+	registerUserDTUlistRouter(battery, authMiddleware)
+	registerUserDTUdetailRouter(battery, authMiddleware)
+	registerUserBatteryDashboardRouter(battery, authMiddleware)
+
+	// 可根据业务需求来设置接口版本,bm1表示batterymanage1
+	otaupdate := r.Group("/api/bm1/otaupdate")
+	// 空接口防止v1定义无使用报错
+	otaupdate.GET("/checkrole", nil)
+	registerUserFirmwareListRouter(otaupdate, authMiddleware)
 
 }
 func registerUserBatteryDashboardRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
@@ -87,5 +93,12 @@ func registerUserDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJ
 	{
 		battertlist.GET("", batterymanage.GetDtuDetail)//dtu详情
 		battertlist.GET("/dtucsq", batterymanage.GetDtuCSQ)//电池SOC
+	}
+}
+func registerUserFirmwareListRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	battertlist := user.Group("/firmwarelist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		battertlist.GET("", batterymanage.GetFirmwareList)//固件列表
+		battertlist.DELETE("/:ota_firmwareId", batterymanage.DelOneFirmwareList)//删除dtu
 	}
 }
