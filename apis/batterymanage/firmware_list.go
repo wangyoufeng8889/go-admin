@@ -2,9 +2,11 @@ package batterymanage
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go-admin/models/batterymanage"
 	"go-admin/tools"
 	"go-admin/tools/app"
+	"net/http"
 )
 //固件列表
 // @Summary 固件列表数据
@@ -57,4 +59,26 @@ func DelOneFirmwareList(c *gin.Context) {
 	result, err := data.BatchDelete(ids)
 	tools.HasError(err, "删除失败", 500)
 	app.OK(c, result, "删除成功")
+}
+
+
+
+// @Summary 更新或提交系统信息
+// @Description 获取JSON
+// @Tags 系统信息
+// @Param data body models.SysUser true "body"
+// @Success 200 {string} string	"{"code": 200, "message": "添加成功"}"
+// @Success 200 {string} string	"{"code": -1, "message": "添加失败"}"
+// @Router /api/v1/system/setting [post]
+func InsertFirmware(c *gin.Context) {
+	var data batterymanage.Ota_firmware
+	err := c.BindWith(&data, binding.JSON)
+	data.CreateBy = tools.GetUserIdStr(c)
+	tools.HasError(err, "", 500)
+	result, err := data.Create()
+	tools.HasError(err, "", -1)
+	var res app.Response
+	res.Data = result
+	c.JSON(http.StatusOK, res.ReturnOK())
+
 }

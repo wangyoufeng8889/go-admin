@@ -61,6 +61,22 @@ func UploadFile(c *gin.Context) {
 			guid := uuid.New().String()
 			_ = ioutil.WriteFile("static/uploadfile/" + guid+ ".jpg", ddd, 0666)
 			app.OK(c, urlPerfix + "static/uploadfile/" + guid+ ".jpg", "上传成功")
+			return
+		case "4": // 单bin文件
+			files,err := c.FormFile("file")
+			if err != nil {
+				app.Error(c,200,errors.New(""),"固件不能为空")
+				return
+			}
+			if utils.GetExt(files.Filename) != ".bin" {
+				app.Error(c,200,errors.New(""),"固件格式错误")
+				return
+			}
+			// 上传文件至指定目录
+			singleFile := "static/uploadfile/firmware/" + files.Filename
+			_ = c.SaveUploadedFile(files, singleFile)
+			app.OK(c, urlPerfix + singleFile, "上传成功")
+			return
 		}
 	}
 }

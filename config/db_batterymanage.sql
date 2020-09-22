@@ -81,7 +81,9 @@ INSERT INTO casbin_rule VALUES (153,'p', 'tester', '/api/bm1/otaupdate/firmwarel
 INSERT INTO casbin_rule VALUES (154,'p', 'admin', '/api/bm1/otaupdate/firmwarelist/:ota_firmwareId', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (155,'p', 'common', '/api/bm1/otaupdate/firmwarelist/:ota_firmwareId', 'DELETE', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (156,'p', 'tester', '/api/bm1/otaupdate/firmwarelist/:ota_firmwareId', 'DELETE', NULL, NULL, NULL);
-
+INSERT INTO casbin_rule VALUES (157,'p', 'admin', '/api/bm1/otaupdate/firmwarelist', 'POST', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (158,'p', 'common', '/api/bm1/otaupdate/firmwarelist', 'POST', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (159,'p', 'tester', '/api/bm1/otaupdate/firmwarelist', 'POST', NULL, NULL, NULL);
 
 
 INSERT INTO sys_menu VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
@@ -124,7 +126,6 @@ INSERT INTO sys_role_menu VALUES (319,1, 16, 'admin', NULL, NULL);
 
 INSERT INTO sys_user VALUES (3, 'john', '13688888888', 2, '', '', '0', 'ww@126.com', 1, 1, '1', '', 'dd', '0', '2020-09-17 15:10:57', '2020-09-17 15:10:57', NULL, 'john', '$2a$10$mAA7kc1nvxs5E3A7do9AZuhMMVNdnMNFPqNUjpgnukOgLM5gwFL6a');
 
-INSERT INTO user_ota_firmware VALUES ('1', 'WanWeiBMS_4G_Luat_V0035_ASR1802_FLOAT_720D', '1.0.1', 'WanWeiBMS_4G_Luat_V0035_ASR1802_FLOAT_720D.bin', 'hello', '2020-09-17 15:10:57', '2020-09-17 15:10:57', NULL, NULL);
 
 COMMIT;
 

@@ -1,6 +1,7 @@
 package batterymanage
 
 import (
+	"errors"
 	orm "go-admin/global"
 	"go-admin/models"
 	"go-admin/tools"
@@ -9,12 +10,14 @@ import (
 type Ota_firmware struct {
 	Ota_firmwareId int    `json:"ota_firmwareId" gorm:"primary_key;AUTO_INCREMENT"`
 	FirmwareName   string `json:"firmwareName" gorm:"type:varchar(256);"`
-	FirmwareVer      string `json:"firmwareVer" gorm:"type:varchar(20);"`
+	FirmwareVer      string `json:"firmwareVer" gorm:"type:varchar(10);"`
+	CoreVer      string `json:"coreVer" gorm:"type:varchar(10);"`
 	FileName      string `json:"fileName" gorm:"type:varchar(256);"`
 	Remark      string `json:"remark" gorm:"type:varchar(256);"`
 
 
 	DataScope  string `json:"dataScope" gorm:"-"`
+	CreateBy  string `gorm:"size:128;" json:"createBy"`
 	UpdateBy  string `gorm:"size:128;" json:"updateBy"`
 	models.BaseModel
 }
@@ -57,3 +60,19 @@ func (e *Ota_firmware) BatchDelete(id []int) (Result bool, err error) {
 
 
 
+func (e *Ota_firmware) Create() (Ota_firmware, error) {
+	var doc Ota_firmware
+	i := 0
+	orm.Eloquent.Table(e.TableName()).Where("firmware_name=? and firmware_ver=? and core_ver = ?", e.FirmwareName, e.FirmwareVer,e.CoreVer).Count(&i)
+	if i > 0 {
+		return doc, errors.New("固件已经存在！")
+	}
+
+	result := orm.Eloquent.Table(e.TableName()).Create(&e)
+	if result.Error != nil {
+		err := result.Error
+		return doc, err
+	}
+	doc = *e
+	return doc, nil
+}

@@ -99,6 +99,7 @@ func registerUserFirmwareListRouter(user *gin.RouterGroup, authMiddleware *jwt.G
 	battertlist := user.Group("/firmwarelist").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
 	{
 		battertlist.GET("", batterymanage.GetFirmwareList)//固件列表
+		battertlist.POST("", batterymanage.InsertFirmware)//固件列表
 		battertlist.DELETE("/:ota_firmwareId", batterymanage.DelOneFirmwareList)//删除dtu
 	}
 }
