@@ -50,7 +50,7 @@ type BatteryMoveInfo struct {
 func (BatteryMoveInfo) TableName() string {
 	return "user_dtu_statusinfolog"
 }
-func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.Time) ([]BatteryMoveInfo,int, error) {
+func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.Time,dateflag int) ([]BatteryMoveInfo,int, error) {
 	var doc []BatteryMoveInfo
 
 	table := orm.Eloquent.Table(e.TableName()).Select([]string{"user_dtu_statusinfolog.dtu_status_info_log_id",
@@ -84,9 +84,14 @@ func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.T
 	if e.Dtu_id != "" {
 		table = table.Where("user_dtu_statusinfolog.dtu_id = ?", e.Dtu_id)
 	}
-	table = table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	if err:=table.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").Find(&doc).Count(&count).Error;err!= nil{
+	table_date := table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table_date.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").Find(&doc).Count(&count).Error;err!= nil{
 		return nil, 0, err
+	}
+	if count == 0 && dateflag != 1 {
+		if err:=table.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").Order("user_dtu_statusinfolog.dtu_status_info_log_id desc").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+			return nil, 0, err
+		}
 	}
 	return doc, count, nil
 }
@@ -110,7 +115,7 @@ func (e *BatteryMoveInfo) GetBatteryLocationInfo() ([]BatteryMoveInfo,int, error
 		return nil, 0, err
 	}
 	var count int
-	table = table.Order("dtu_status_info_log_id").Find(&doc)
+	table = table.Order("user_dtu_statusinfolog.dtu_uptime desc").Find(&doc)
 	if table.Error != nil {
 		return nil, 0, err
 	}
