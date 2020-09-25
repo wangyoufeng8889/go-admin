@@ -105,7 +105,7 @@ func (e *DtuListInfo) Getdtu_listinfo(pageSize int, pageIndex int) ([]DtuListInf
 		return nil, 0, err
 	}
 	var count int
-	if err := table.Order("dtu_spec_info_id").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error; err != nil {
+	if err := table.Order("user_dtu_statusinfo.dtu_uptime desc").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&doc).Error; err != nil {
 		return nil, 0, err
 	}
 	table.Where("user_dtu_specinfo.deleted_at IS NULL").Count(&count)

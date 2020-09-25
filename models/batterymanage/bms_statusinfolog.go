@@ -58,7 +58,7 @@ type BatterySOCInfo struct {
 func (BatterySOCInfo) TableName() string {
 	return "user_bms_statusinfolog"
 }
-func (e *BatterySOCInfo) GetBatterySOCInfo(starttime time.Time, endtime time.Time) ([]BatterySOCInfo,int, error) {
+func (e *BatterySOCInfo) GetBatterySOCInfo(starttime time.Time, endtime time.Time,dateflag int) ([]BatterySOCInfo,int, error) {
 	var doc []BatterySOCInfo
 
 	table := orm.Eloquent.Table(e.TableName()).Select([]string{"user_bms_statusinfolog.bms_status_info_log_id",
@@ -94,9 +94,14 @@ func (e *BatterySOCInfo) GetBatterySOCInfo(starttime time.Time, endtime time.Tim
 	if e.Dtu_id != "" {
 		table = table.Where("user_bms_statusinfolog.dtu_id = ?", e.Dtu_id)
 	}
-	table = table.Where("user_bms_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+	table_date := table.Where("user_bms_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table_date.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
 		return nil, 0, err
+	}
+	if count == 0 && dateflag != 1 {
+		if err:=table.Where("`deleted_at` IS NULL").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+			return nil, 0, err
+		}
 	}
 	return doc, count, nil
 }

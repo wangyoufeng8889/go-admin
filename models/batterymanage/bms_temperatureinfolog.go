@@ -23,7 +23,7 @@ type Bms_temperatureInfoLog struct {
 func (Bms_temperatureInfoLog) TableName() string {
 	return "user_bms_temperatureinfolog"
 }
-func (e *Bms_temperatureInfoLog) GetBms_temperatureInfoLog(starttime time.Time, endtime time.Time) ([]Bms_temperatureInfoLog,int, error) {
+func (e *Bms_temperatureInfoLog) GetBms_temperatureInfoLog(starttime time.Time, endtime time.Time,dateflag int) ([]Bms_temperatureInfoLog,int, error) {
 	var doc []Bms_temperatureInfoLog
 
 	table := orm.Eloquent.Select("*").Table(e.TableName())
@@ -48,9 +48,14 @@ func (e *Bms_temperatureInfoLog) GetBms_temperatureInfoLog(starttime time.Time, 
 	if e.Dtu_id != "" {
 		table = table.Where("user_bms_temperatureinfolog.dtu_id = ?", e.Dtu_id)
 	}
-	table = table.Where("user_bms_temperatureinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+	table_date := table.Where("user_bms_temperatureinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table_date.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
 		return nil, 0, err
+	}
+	if count == 0 && dateflag != 1 {
+		if err:=table.Where("`deleted_at` IS NULL").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+			return nil, 0, err
+		}
 	}
 	return doc, count, nil
 }

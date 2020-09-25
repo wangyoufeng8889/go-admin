@@ -39,7 +39,7 @@ type Bms_cellInfoLog struct {
 func (Bms_cellInfoLog) TableName() string {
 	return "user_bms_cellinfolog"
 }
-func (e *Bms_cellInfoLog) GetBms_cellInfoLog(starttime time.Time, endtime time.Time) ([]Bms_cellInfoLog,int, error) {
+func (e *Bms_cellInfoLog) GetBms_cellInfoLog(starttime time.Time, endtime time.Time,dateflag int) ([]Bms_cellInfoLog,int, error) {
 	var doc []Bms_cellInfoLog
 
 	table := orm.Eloquent.Select("*").Table(e.TableName())
@@ -64,9 +64,14 @@ func (e *Bms_cellInfoLog) GetBms_cellInfoLog(starttime time.Time, endtime time.T
 	if e.Dtu_id != "" {
 		table = table.Where("user_bms_cellinfolog.dtu_id = ?", e.Dtu_id)
 	}
-	table = table.Where("user_bms_cellinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+	table_date := table.Where("user_bms_cellinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table_date.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
 		return nil, 0, err
+	}
+	if count == 0 && dateflag != 1 {
+		if err:=table.Where("`deleted_at` IS NULL").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+			return nil, 0, err
+		}
 	}
 	return doc, count, nil
 }

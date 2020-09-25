@@ -72,7 +72,7 @@ func (am *AmqpManager) processMessage(message *amqp.Message) {
 	//fmt.Printf("topic=%s\r\n",message.ApplicationProperties["topic"])
 	//fmt.Printf("generateTime=%d\r\n",message.ApplicationProperties["generateTime"])
 
-	//global.Logger.Info("data received:", string(message.GetData()), " properties:", message.ApplicationProperties)
+	global.Logger.Info("data received:", string(message.GetData()), " properties:", message.ApplicationProperties)
 	//1、解析产品ID 设备ID topic
 
 	var modbusMessage ModbusMessage

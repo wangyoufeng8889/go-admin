@@ -44,6 +44,7 @@ func GetDtuDetail(c *gin.Context) {
 func GetDtuCSQ(c *gin.Context) {
 	var data batterymanage.DtuCSQInfo
 	var err error
+	var dateflag int = 0
 	var starttime time.Time = time.Now().AddDate(0,0,-1)
 	var endtime time.Time = time.Now()
 	if date := c.Request.FormValue("startTime"); date != "" {
@@ -55,6 +56,7 @@ func GetDtuCSQ(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
 
 	if date := c.Request.FormValue("endTime"); date != "" {
@@ -66,14 +68,17 @@ func GetDtuCSQ(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
-
+	if dateflag == 2{
+		dateflag = 1
+	}
 	//按照json格式
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result, _, err := data.GetDtuCSQInfo(starttime, endtime)
+	result, _, err := data.GetDtuCSQInfo(starttime, endtime,dateflag)
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }

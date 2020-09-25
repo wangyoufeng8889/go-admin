@@ -44,6 +44,7 @@ func GetBatteryDetail(c *gin.Context) {
 func GetBatterySOC(c *gin.Context) {
 	var data batterymanage.BatterySOCInfo
 	var err error
+	var dateflag int = 0
 	var starttime time.Time = time.Now().AddDate(0,0,-1)
 	var endtime time.Time = time.Now()
 	if date := c.Request.FormValue("startTime"); date != "" {
@@ -55,6 +56,7 @@ func GetBatterySOC(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
 
 	if date := c.Request.FormValue("endTime"); date != "" {
@@ -66,14 +68,17 @@ func GetBatterySOC(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
-
+	if dateflag == 2{
+		dateflag = 1
+	}
 	//按照json格式
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result, _, err := data.GetBatterySOCInfo(starttime, endtime)
+	result, _, err := data.GetBatterySOCInfo(starttime, endtime,dateflag)
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }
@@ -92,6 +97,7 @@ func GetBatterySOC(c *gin.Context) {
 func GetBatteryCell(c *gin.Context) {
 	var data batterymanage.Bms_cellInfoLog
 	var err error
+	var dateflag int = 0
 	var starttime time.Time = time.Now().AddDate(0,0,-1)
 	var endtime time.Time = time.Now()
 	if date := c.Request.FormValue("startTime"); date != "" {
@@ -103,6 +109,7 @@ func GetBatteryCell(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
 
 	if date := c.Request.FormValue("endTime"); date != "" {
@@ -114,14 +121,17 @@ func GetBatteryCell(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
-
+	if dateflag == 2{
+		dateflag = 1
+	}
 	//按照json格式
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result, _, err := data.GetBms_cellInfoLog(starttime, endtime)
+	result, _, err := data.GetBms_cellInfoLog(starttime, endtime,dateflag)
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }
@@ -140,6 +150,7 @@ func GetBatteryCell(c *gin.Context) {
 func GetBatteryTemper(c *gin.Context) {
 	var data batterymanage.Bms_temperatureInfoLog
 	var err error
+	var dateflag int = 0
 	var starttime time.Time = time.Now().AddDate(0,0,-1)
 	var endtime time.Time = time.Now()
 	if date := c.Request.FormValue("startTime"); date != "" {
@@ -151,6 +162,7 @@ func GetBatteryTemper(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
 
 	if date := c.Request.FormValue("endTime"); date != "" {
@@ -162,14 +174,17 @@ func GetBatteryTemper(c *gin.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		dateflag += 1
 	}
-
+	if dateflag == 2{
+		dateflag = 1
+	}
 	//按照json格式
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 	data.Dtu_id = c.Request.FormValue("dtu_id")
 
 	data.DataScope = tools.GetUserIdStr(c)
-	result, _, err := data.GetBms_temperatureInfoLog(starttime, endtime)
+	result, _, err := data.GetBms_temperatureInfoLog(starttime, endtime,dateflag)
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
 }

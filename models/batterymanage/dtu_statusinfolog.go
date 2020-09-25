@@ -148,7 +148,7 @@ type DtuCSQInfo struct {
 func (DtuCSQInfo) TableName() string {
 	return "user_dtu_statusinfolog"
 }
-func (e *DtuCSQInfo) GetDtuCSQInfo(starttime time.Time, endtime time.Time) ([]DtuCSQInfo,int, error) {
+func (e *DtuCSQInfo) GetDtuCSQInfo(starttime time.Time, endtime time.Time,dateflag int) ([]DtuCSQInfo,int, error) {
 	var doc []DtuCSQInfo
 
 	table := orm.Eloquent.Table(e.TableName()).Select([]string{"user_dtu_statusinfolog.dtu_status_info_log_id",
@@ -184,9 +184,14 @@ func (e *DtuCSQInfo) GetDtuCSQInfo(starttime time.Time, endtime time.Time) ([]Dt
 	if e.Dtu_id != "" {
 		table = table.Where("user_dtu_statusinfolog.dtu_id = ?", e.Dtu_id)
 	}
-	table = table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
-	if err:=table.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
+	table_date := table.Where("user_dtu_statusinfolog.dtu_uptime BETWEEN ? AND ?",starttime,endtime)
+	if err:=table_date.Where("`deleted_at` IS NULL").Find(&doc).Count(&count).Error;err!= nil{
 		return nil, 0, err
+	}
+	if count == 0 && dateflag != 1 {
+		if err:=table.Where("`deleted_at` IS NULL").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+			return nil, 0, err
+		}
 	}
 	return doc, count, nil
 }
