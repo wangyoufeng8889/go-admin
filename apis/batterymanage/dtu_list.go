@@ -41,7 +41,7 @@ func GetDtuList(c *gin.Context) {
 	id := c.Request.FormValue("dtu_specInfoId")
 	data.Dtu_specInfoId, _ = tools.StringToInt(id)
 
-	data.Dtu_id = c.Request.FormValue("pkg_id")
+	data.Dtu_id = c.Request.FormValue("dtu_id")
 	data.Pkg_id = c.Request.FormValue("pkg_id")
 
 	dtu_type := c.Request.FormValue("dtu_type")

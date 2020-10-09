@@ -70,25 +70,25 @@ func (e *BatteryListInfo) GetBatteryListInfo(pageSize int, pageIndex int) ([]Bat
 		"user_bms_statusinfo.bms_voltage"})
 	table = table.Joins("LEFT JOIN user_bms_statusinfo ON user_bms_specinfo.pkg_id=user_bms_statusinfo.pkg_id")
 	if e.Bms_specInfoId != 0 {
-		table = table.Where("bms_spec_info_id = ?", e.Bms_specInfoId)
+		table = table.Where("user_bms_specinfo.bms_spec_info_id = ?", e.Bms_specInfoId)
 	}
 	if e.Pkg_id != "" {
-		table = table.Where("pkg_id = ?", e.Pkg_id)
+		table = table.Where("user_bms_specinfo.pkg_id = ?", e.Pkg_id)
 	}
 	if e.Pkg_type != 0 {
-		table = table.Where("pkg_type = ?", e.Pkg_type)
+		table = table.Where("user_bms_specinfo.pkg_type = ?", e.Pkg_type)
 	}
 	if e.Pkg_capacity != 0 {
-		table = table.Where("pkg_capacity = ?", e.Pkg_capacity)
+		table = table.Where("user_bms_specinfo.pkg_capacity = ?", e.Pkg_capacity)
 	}
 	if e.Bms_chargeStatus != 0 {
-		table = table.Where("bms_charge_status = ?", e.Bms_chargeStatus)
+		table = table.Where("user_bms_statusinfo.bms_charge_status = ?", e.Bms_chargeStatus)
 	}
 	if e.Bms_soc != 0 {
-		table = table.Where("bms_soc > ?", e.Bms_soc)
+		table = table.Where("user_bms_statusinfo.bms_soc > ?", e.Bms_soc)
 	}
 	if e.Bms_errNbr != 0 {
-		table = table.Where("bms_err_nbr > ?", e.Bms_errNbr)
+		table = table.Where("user_bms_statusinfo.bms_err_nbr > ?", e.Bms_errNbr)
 	}
 	// 数据权限控制
 	dataPermission := new(models.DataPermission)

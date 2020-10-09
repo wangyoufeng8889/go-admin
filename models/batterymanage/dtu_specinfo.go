@@ -73,28 +73,28 @@ func (e *DtuListInfo) Getdtu_listinfo(pageSize int, pageIndex int) ([]DtuListInf
 		"user_dtu_statusinfo.dtu_err_nbr"})
 	table = table.Joins("LEFT JOIN user_dtu_statusinfo ON user_dtu_specinfo.dtu_id=user_dtu_statusinfo.dtu_id")
 	if e.Dtu_specInfoId != 0 {
-		table = table.Where("dtu_spec_info_id = ?", e.Dtu_specInfoId)
+		table = table.Where("user_dtu_specinfo.dtu_spec_info_id = ?", e.Dtu_specInfoId)
 	}
 	if e.Dtu_id != "" {
-		table = table.Where("dtu_id = ?", e.Dtu_id)
+		table = table.Where("user_dtu_specinfo.dtu_id = ?", e.Dtu_id)
 	}
 	if e.Pkg_id != "" {
-		table = table.Where("pkg_id = ?", e.Pkg_id)
+		table = table.Where("user_dtu_specinfo.pkg_id = ?", e.Pkg_id)
 	}
 	if e.Dtu_type != 0 {
-		table = table.Where("dtu_type = ?", e.Dtu_type)
+		table = table.Where("user_dtu_specinfo.dtu_type = ?", e.Dtu_type)
 	}
 	if e.Dtu_setupType != 0 {
-		table = table.Where("dtu_setup_type = ?", e.Dtu_setupType)
+		table = table.Where("user_dtu_specinfo.dtu_setup_type = ?", e.Dtu_setupType)
 	}
 	if e.Dtu_aliyunStatus != 0 {
-		table = table.Where("dtu_aliyun_status = ?", e.Dtu_aliyunStatus)
+		table = table.Where("user_dtu_specinfo.dtu_aliyun_status = ?", e.Dtu_aliyunStatus)
 	}
 	if e.Dtu_csq != 0 {
-		table = table.Where("dtu_csq > ?", e.Dtu_csq)
+		table = table.Where("user_dtu_statusinfo.dtu_csq > ?", e.Dtu_csq)
 	}
 	if e.Dtu_errNbr != 0 {
-		table = table.Where("dtu_err_nbr >= ?", e.Dtu_errNbr)
+		table = table.Where("user_dtu_statusinfo.dtu_err_nbr >= ?", e.Dtu_errNbr)
 	}
 
 	// 数据权限控制
