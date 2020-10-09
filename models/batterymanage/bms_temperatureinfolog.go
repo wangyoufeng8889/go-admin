@@ -53,7 +53,7 @@ func (e *Bms_temperatureInfoLog) GetBms_temperatureInfoLog(starttime time.Time, 
 		return nil, 0, err
 	}
 	if count == 0 && dateflag != 1 {
-		if err:=table.Where("`deleted_at` IS NULL").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+		if err:=table.Where("`deleted_at` IS NULL").Last(&doc).Count(&count).Error;err!= nil{
 			return nil, 0, err
 		}
 	}

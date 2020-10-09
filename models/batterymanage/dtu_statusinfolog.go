@@ -89,7 +89,7 @@ func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.T
 		return nil, 0, err
 	}
 	if count == 0 && dateflag != 1 {
-		if err:=table.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").Order("user_dtu_statusinfolog.dtu_status_info_log_id desc").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+		if err:=table.Where("`deleted_at` IS NULL").Where("user_dtu_statusinfolog.dtu_latitude <> ?", "0").Last(&doc).Count(&count).Error;err!= nil{
 			return nil, 0, err
 		}
 	}
@@ -194,7 +194,7 @@ func (e *DtuCSQInfo) GetDtuCSQInfo(starttime time.Time, endtime time.Time,datefl
 		return nil, 0, err
 	}
 	if count == 0 && dateflag != 1 {
-		if err:=table.Where("`deleted_at` IS NULL").Limit(100).Find(&doc).Count(&count).Error;err!= nil{
+		if err:=table.Where("`deleted_at` IS NULL").Last(&doc).Count(&count).Error;err!= nil{
 			return nil, 0, err
 		}
 	}
