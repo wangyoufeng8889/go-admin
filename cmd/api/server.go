@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go-admin/aliyunjobs"
 	"go-admin/database"
 	"go-admin/global"
 	"go-admin/jobs"
@@ -82,10 +83,10 @@ func run() error {
 	}()
 
 	//运行阿里云服务
-	//go func() {
-	//	time.Sleep(1000 * time.Millisecond)
-	//	aliyunjobs.AliyunServerRun()
-	//}()
+	go func() {
+		time.Sleep(1000 * time.Millisecond)
+		aliyunjobs.AliyunServerRun()
+	}()
 	go func() {
 		// 服务连接
 		if config.SslConfig.Enable {
