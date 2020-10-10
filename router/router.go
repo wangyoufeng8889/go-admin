@@ -44,7 +44,7 @@ func examplesCheckRoleRouter(r *gin.Engine, authMiddleware *jwtauth.GinJWTMiddle
 	registerUserDTUlistRouter(battery, authMiddleware)
 	registerUserDTUdetailRouter(battery, authMiddleware)
 	registerUserBatteryDashboardRouter(battery, authMiddleware)
-
+	registerUserdtubmsbandRouter(battery, authMiddleware)
 	// 可根据业务需求来设置接口版本,bm1表示batterymanage1
 	otaupdate := r.Group("/api/bm1/otaupdate")
 	// 空接口防止v1定义无使用报错
@@ -101,5 +101,11 @@ func registerUserFirmwareListRouter(user *gin.RouterGroup, authMiddleware *jwt.G
 		battertlist.GET("", batterymanage.GetFirmwareList)//固件列表
 		battertlist.POST("", batterymanage.InsertFirmware)//固件列表
 		battertlist.DELETE("/:ota_firmwareId", batterymanage.DelOneFirmwareList)//删除dtu
+	}
+}
+func registerUserdtubmsbandRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	battertlist := user.Group("/dtubmsbandlog").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		battertlist.GET("", batterymanage.GetDtuBmsBandList)//电池列表
 	}
 }

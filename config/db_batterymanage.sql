@@ -88,6 +88,11 @@ INSERT INTO casbin_rule VALUES (157,'p', 'admin', '/api/bm1/otaupdate/firmwareli
 INSERT INTO casbin_rule VALUES (158,'p', 'common', '/api/bm1/otaupdate/firmwarelist', 'POST', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (159,'p', 'tester', '/api/bm1/otaupdate/firmwarelist', 'POST', NULL, NULL, NULL);
 
+INSERT INTO casbin_rule VALUES (160,'p', 'admin', '/api/bm1/battery/dtubmsbandlog', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (161,'p', 'common', '/api/bm1/battery/dtubmsbandlog', 'GET', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (162,'p', 'tester', '/api/bm1/battery/dtubmsbandlog', 'GET', NULL, NULL, NULL);
+
+
 
 INSERT INTO sys_menu VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);
 INSERT INTO sys_menu VALUES (5, 'batterylist', '电池列表', 'component', '/api/bm1/battery/batterylist', '/0/4/5', 'C', '', 'system:batterylist:list', 4, 1, '', '/batterylist/index', 1, '0', '1', '1', '0', '2020-04-11 15:52:48', '2020-04-12 11:10:42', NULL);
