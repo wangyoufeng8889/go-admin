@@ -51,7 +51,7 @@ func (e *Bms_cellInfoLog) GetBms_cellInfoLog(starttime time.Time, endtime time.T
 		return nil, 0, err
 	}
 	var count int
-	table = table.Order("user_bms_cellinfolog.bms_cell_info_log_id").Find(&doc)
+	table = table.Order("user_bms_cellinfolog.dtu_uptime desc").Find(&doc)
 	if table.Error != nil {
 		return nil, 0, err
 	}

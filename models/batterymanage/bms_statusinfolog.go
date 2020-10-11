@@ -80,7 +80,7 @@ func (e *BatterySOCInfo) GetBatterySOCInfo(starttime time.Time, endtime time.Tim
 		return nil, 0, err
 	}
 	var count int
-	table = table.Order("user_bms_statusinfolog.bms_status_info_log_id").Find(&doc)
+	table = table.Order("user_bms_statusinfolog.dtu_uptime desc").Find(&doc)
 	if table.Error != nil {
 		return nil, 0, err
 	}

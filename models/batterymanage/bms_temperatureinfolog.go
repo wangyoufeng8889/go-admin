@@ -35,7 +35,7 @@ func (e *Bms_temperatureInfoLog) GetBms_temperatureInfoLog(starttime time.Time, 
 		return nil, 0, err
 	}
 	var count int
-	table = table.Order("user_bms_temperatureinfolog.Bms_temperature_info_log_id").Find(&doc)
+	table = table.Order("user_bms_temperatureinfolog.dtu_uptime desc").Find(&doc)
 	if table.Error != nil {
 		return nil, 0, err
 	}

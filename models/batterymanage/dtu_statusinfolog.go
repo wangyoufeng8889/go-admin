@@ -70,7 +70,7 @@ func (e *BatteryMoveInfo) GetBatteryMoveInfo(starttime time.Time, endtime time.T
 		return nil, 0, err
 	}
 	var count int
-	table = table.Order("dtu_status_info_log_id").Find(&doc)
+	table = table.Order("user_dtu_statusinfolog.dtu_uptime asc").Find(&doc)
 	if table.Error != nil {
 		return nil, 0, err
 	}
@@ -175,7 +175,7 @@ func (e *DtuCSQInfo) GetDtuCSQInfo(starttime time.Time, endtime time.Time,datefl
 		return nil, 0, err
 	}
 	var count int
-	table = table.Order("user_dtu_statusinfolog.dtu_status_info_log_id").Find(&doc)
+	table = table.Order("user_dtu_statusinfolog.dtu_uptime desc").Find(&doc)
 	if table.Error != nil {
 		return nil, 0, err
 	}
