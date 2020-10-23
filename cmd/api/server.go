@@ -85,7 +85,7 @@ func run() error {
 	//运行阿里云服务
 	go func() {
 		time.Sleep(1000 * time.Millisecond)
-		aliyunjobs.AliyunServerRun()
+		aliyunjobs.AliyunMonitorServerRun()
 	}()
 	go func() {
 		// 服务连接

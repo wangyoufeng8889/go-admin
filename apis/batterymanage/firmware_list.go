@@ -80,5 +80,4 @@ func InsertFirmware(c *gin.Context) {
 	var res app.Response
 	res.Data = result
 	c.JSON(http.StatusOK, res.ReturnOK())
-
 }

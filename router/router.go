@@ -93,6 +93,8 @@ func registerUserDTUdetailRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJ
 	{
 		battertlist.GET("", batterymanage.GetDtuDetail)//dtu详情
 		battertlist.GET("/dtucsq", batterymanage.GetDtuCSQ)//电池SOC
+		battertlist.POST("/dtulock", batterymanage.SetDtuLock)//车辆锁控制
+
 	}
 }
 func registerUserFirmwareListRouter(user *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {

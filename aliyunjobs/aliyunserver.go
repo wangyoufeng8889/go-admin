@@ -27,14 +27,15 @@ const iotInstanceId = ""
 //建议使用机器UUID、MAC地址、IP等唯一标识等作为clientId。便于您区分识别不同的客户端。
 var clientId string
 var messageChan chan ModbusMessage
-var AliyunClient *sdk.Client
-func AliyunServerRun() {
+var AliyunMonitorClient *sdk.Client
+func AliyunMonitorServerRun() {
 	uid = config.AliyunConfig.Uid
 	accessKey = config.AliyunConfig.AccessKey
 	accessSecret = config.AliyunConfig.AccessSecret
 	region = config.AliyunConfig.Region
 	clientId = config.AliyunConfig.ClientId
-	//接入域名，请参见AMQP客户端接入说明文档。
+	//
+	////接入域名，请参见AMQP客户端接入说明文档。
 	address := fmt.Sprintf("amqps://%s.iot-amqp.%s.aliyuncs.com:5671", uid, region)
 	timestamp := time.Now().Nanosecond() / 1000000
 	//userName组装方法，请参见AMQP客户端接入说明文档。
@@ -52,12 +53,12 @@ func AliyunServerRun() {
 		password:password,
 	}
 
-	AliyunClient, err := sdk.NewClientWithAccessKey(region ,accessKey,accessSecret)
+	AliyunMonitorClient, err := sdk.NewClientWithAccessKey(region ,accessKey,accessSecret)
 	if err != nil {
 		// Handle exceptions
 		panic(err)
 	}
-	global.Logger.Info(AliyunClient)
+	global.Logger.Info(AliyunMonitorClient)
 
 	//如果需要做接受消息通信或者取消操作，从Background衍生context。
 	ctx := context.Background()
@@ -112,7 +113,7 @@ func (am *AmqpManager) processMessage(message *amqp.Message) {
 		}
 		messageChan <- modbusMessage
 		go ModbusServer(messageChan)
-	}else if topicslic[1] == "a188ncLCDbX"{
+	}else if topicslic[1] == "a188ncLCDbX" || topicslic[1] == "a1kbr8IY4LO"{
 		modbusMessage.ProductID =  topicslic[1]
 		modbusMessage.DtuID =topicslic[2]
 		modbusMessage.Topic ="/"+topicslic[3]+"/"+topicslic[4]

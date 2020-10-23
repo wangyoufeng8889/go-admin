@@ -3,6 +3,7 @@ package batterymanage
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-admin/aliyunjobs"
 	"go-admin/models/batterymanage"
 	"go-admin/tools"
 	"go-admin/tools/app"
@@ -81,4 +82,39 @@ func GetDtuCSQ(c *gin.Context) {
 	result, _, err := data.GetDtuCSQInfo(starttime, endtime,dateflag)
 	tools.HasError(err, "", -1)
 	app.OK(c, result, "")
+}
+
+//电池soc
+// @Summary 设置远程锁车
+// @Description Get JSON
+// @Tags 设置远程锁车/SetDtuLock
+// @Param dtu_id query string false "dtu_id"
+// @Param status query string false "status"
+// @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
+// @Router /api/bm1/battery/batterysoc[get]
+// @john wang
+func SetDtuLock(c *gin.Context) {
+	//按照json格式
+	var topicbuf string
+	dtu_id := c.Request.FormValue("dtu_id")
+	status := c.Request.FormValue("status")
+	reportperiod := c.Request.FormValue("reportperiod")
+	if status != "" {
+		if status == "0" {
+			topicbuf = "77B800000009011077B80001020000"
+		}else {
+			topicbuf = "77B800000009011077B80001020001"
+		}
+	}else if reportperiod != "" {
+		value,err := tools.StringToInt(reportperiod)
+		if err != nil{
+			fmt.Println(err)
+		}else {
+			topicbuf = fmt.Sprintf("77B700000009011077B7000102%04x",value)
+		}
+	}
+	err := aliyunjobs.AliyunPubTopic(dtu_id,topicbuf)
+
+	tools.HasError(err, "", -1)
+	app.OK(c, "", "")
 }

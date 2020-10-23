@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/aliyun/alibaba-cloud-sdk-go v1.61.442
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.564
 	github.com/casbin/casbin/v2 v2.2.1
 	github.com/casbin/gorm-adapter/v2 v2.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -20,7 +20,7 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/iancoleman/strcase v0.1.0
 	github.com/jinzhu/gorm v1.9.10
-	github.com/jmespath/go-jmespath v0.3.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/matchstalk/redisqueue v1.0.3
 	github.com/matchstalk/utils v0.0.0-20200806172422-ecd38701b407
@@ -38,6 +38,6 @@ require (
 	github.com/unrolled/secure v1.0.8
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
 	golang.org/x/tools v0.0.0-20200402223321-bcf690261a44 // indirect
-	gopkg.in/ini.v1 v1.60.2 // indirect
+	gopkg.in/ini.v1 v1.62.0 // indirect
 	pack.ag/amqp v0.12.5
 )

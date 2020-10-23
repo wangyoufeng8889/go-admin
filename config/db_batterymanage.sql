@@ -71,6 +71,7 @@ INSERT INTO casbin_rule VALUES (142,'p', 'admin', '/api/bm1/battery/dtudetail/dt
 INSERT INTO casbin_rule VALUES (143,'p', 'common', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (144,'p', 'tester', '/api/bm1/battery/dtudetail/dtucsq', 'GET', NULL, NULL, NULL);
 
+
 INSERT INTO casbin_rule VALUES (145,'p', 'admin', '/api/bm1/battery/batterydetail/batterycell', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (146,'p', 'common', '/api/bm1/battery/batterydetail/batterycell', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (147,'p', 'tester', '/api/bm1/battery/batterydetail/batterycell', 'GET', NULL, NULL, NULL);
@@ -92,6 +93,8 @@ INSERT INTO casbin_rule VALUES (160,'p', 'admin', '/api/bm1/battery/dtubmsbandlo
 INSERT INTO casbin_rule VALUES (161,'p', 'common', '/api/bm1/battery/dtubmsbandlog', 'GET', NULL, NULL, NULL);
 INSERT INTO casbin_rule VALUES (162,'p', 'tester', '/api/bm1/battery/dtubmsbandlog', 'GET', NULL, NULL, NULL);
 
+INSERT INTO casbin_rule VALUES (163,'p', 'admin', '/api/bm1/battery/dtudetail/dtulock', 'POST', NULL, NULL, NULL);
+INSERT INTO casbin_rule VALUES (164,'p', 'tester', '/api/bm1/battery/dtudetail/dtulock', 'POST', NULL, NULL, NULL);
 
 
 INSERT INTO sys_menu VALUES (4, 'battery', '电池信息', 'example', '/api/bm1/battery', '/0/4', 'M', '', '', 0, 1, '', 'Layout', 4, '0', '1', '1', '0', '2020-04-11 15:52:48', NULL, NULL);

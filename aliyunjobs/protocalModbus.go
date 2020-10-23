@@ -147,7 +147,21 @@ func modbusParseTcp(msg ModbusMessage)(addr uint16,reglen uint8,reg []uint16,err
 			break
 		}
 	}else if cmd == 0x10 {
+		//读寄存器
 		//写寄存器
+		addr10 := uint16(msg.Payload[8])<<8 +uint16(msg.Payload[9])
+		reglen := uint16(msg.Payload[10])<<8 +uint16(msg.Payload[11])
+		fmt.Println("write addr=",addr10,"reglen=",reglen)
+		switch addr {
+		case 30648:
+			//modbusProcess30648(reg,reglen,msg)
+			break
+		case 30700:
+			break
+		default:
+			global.Logger.Info("default 30xxx")
+			break
+		}
 	}else {
 		return addr, reglen, reg,fmt.Errorf("payload cmd is err")
 	}
@@ -859,5 +873,26 @@ func modbusProcess30647(reg []uint16,reglen uint8,msg ModbusMessage)  {
 		if err:=orm.Eloquent.Model(batterymanage.Dtu_paraSetReg{}).Where(&batterymanage.Dtu_paraSetReg{Dtu_id: msg.DtuID}).Updates(bms_paraSetRegmap).Error;err != nil {
 			global.Logger.Info(err)
 		}
+	}
+}
+func modbusProcess30648(reg []uint16,reglen uint8,msg ModbusMessage)  {
+	pkg_id:= Dtu_Pkg_map[msg.DtuID]
+	if len(pkg_id)<5{
+		res := Dtu_BMS_map_Init(msg)
+		if res != true {
+			global.Logger.Info("find no bmsID")
+			pkg_id=""
+		}else {
+			pkg_id= Dtu_Pkg_map[msg.DtuID]
+		}
+	}
+
+	var dtu_paraSetReg batterymanage.Dtu_paraSetReg
+	dtu_paraSetReg.Dtu_uptime=time.Unix(msg.Timestamp/1000, 0)
+	dtu_paraSetReg.Dtu_id=msg.DtuID
+	dtu_paraSetReg.Dtu_remoteLockCar=  uint16(reg[1])
+	bms_paraSetRegmap:=Struct2Map(dtu_paraSetReg,[]int{0,1,2,3,4,-6,-5,-4,-3,-2,-1})
+	if err:=orm.Eloquent.Model(batterymanage.Dtu_paraSetReg{}).Where(&batterymanage.Dtu_paraSetReg{Dtu_id: msg.DtuID}).Updates(bms_paraSetRegmap).Error;err != nil {
+		global.Logger.Info(err)
 	}
 }
