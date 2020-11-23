@@ -99,8 +99,12 @@ func GetUpdataFirmware(c *gin.Context) {
 
 	data.FirmwareName = c.Request.FormValue("firmwareName")
 	curVer := c.Request.FormValue("firmwareVer")
-	strings.Split(curVer,'.')
-	hardVer,_ := tools.StringToInt()
+	ver :=  strings.Split(curVer,".")
+	hardVer,_ := tools.StringToInt(ver[0])
+	softVer1,_ := tools.StringToInt(ver[1])
+	softVer2,_ := tools.StringToInt(ver[2])
+	softVer := softVer1*10+softVer2
+	println("hardver=",hardVer,"softver=",softVer)
 	data.DataScope = tools.GetUserIdStr(c)
 	result, err := data.GetFirmwareInfo()
 	tools.HasError(err, "", -1)
