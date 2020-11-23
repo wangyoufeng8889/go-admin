@@ -31,7 +31,7 @@ func (e *Ota_firmware) GetFirmwareListInfo(pageSize int, pageIndex int) ([]Ota_f
 		table = table.Where("ota_firmware_id = ?", e.Ota_firmwareId)
 	}
 	if e.FirmwareName != "" {
-		table = table.Where("firmwareName = ?", e.FirmwareName)
+		table = table.Where("firmware_name = ?", e.FirmwareName)
 	}
 	if e.FirmwareVer != "" {
 		table = table.Where("firmware_ver = ?", e.FirmwareVer)
@@ -74,5 +74,29 @@ func (e *Ota_firmware) Create() (Ota_firmware, error) {
 		return doc, err
 	}
 	doc = *e
+	return doc, nil
+}
+func (e *Ota_firmware) GetFirmwareInfo() (Ota_firmware, error) {
+	var doc Ota_firmware
+	table := orm.Eloquent.Select("*").Table(e.TableName())
+	if e.Ota_firmwareId != 0 {
+		table = table.Where("ota_firmware_id = ?", e.Ota_firmwareId)
+	}
+	if e.FirmwareName != "" {
+		table = table.Where("firmware_name = ?", e.FirmwareName)
+	}
+	if e.FirmwareVer != "" {
+		table = table.Where("firmware_ver = ?", e.FirmwareVer)
+	}
+	// 数据权限控制
+	dataPermission := new(models.DataPermission)
+	dataPermission.UserId, _ = tools.StringToInt(e.DataScope)
+	table, err := dataPermission.GetDataScope(e.TableName(), table)
+	if err != nil {
+		return doc, err
+	}
+	if err := table.Order("ota_firmware_id").First(&doc).Error; err != nil {
+		return doc, err
+	}
 	return doc, nil
 }

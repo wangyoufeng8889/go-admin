@@ -26,6 +26,7 @@ func examplesNoCheckRoleRouter(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 	// 空接口防止v1定义无使用报错
 	v1.GET("/nilcheckrole", nil)
+	v1.GET("/update", batterymanage.GetUpdataFirmware)
 
 	// {{无需认证路由自动补充在此处请勿删除}}
 }

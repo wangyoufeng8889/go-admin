@@ -7,6 +7,7 @@ import (
 	"go-admin/tools"
 	"go-admin/tools/app"
 	"net/http"
+	"strings"
 )
 //固件列表
 // @Summary 固件列表数据
@@ -80,4 +81,33 @@ func InsertFirmware(c *gin.Context) {
 	var res app.Response
 	res.Data = result
 	c.JSON(http.StatusOK, res.ReturnOK())
+}
+//固件列表
+// @Summary 固件列表数据
+// @Description Get JSON
+// @Tags 固件列表/FirmwareList
+// @Param firmwareName query string false "firmwareName"
+// @Param firmwareVer query uint8 false "firmwareVer"
+// @Param pageSize query int false "页条数"
+// @Param pageIndex query int false "页码"
+// @Success 200 {object} app.Response "{"code": 200, "data": [...]}"
+// @Router /api/bm1/battery/firmwarelist [get]
+// @john wang
+func GetUpdataFirmware(c *gin.Context) {
+	var data batterymanage.Ota_firmware
+	//按照json格式
+
+	data.FirmwareName = c.Request.FormValue("firmwareName")
+	curVer := c.Request.FormValue("firmwareVer")
+	strings.Split(curVer,'.')
+	hardVer,_ := tools.StringToInt()
+	data.DataScope = tools.GetUserIdStr(c)
+	result, err := data.GetFirmwareInfo()
+	tools.HasError(err, "", -1)
+	if curVer == result.FirmwareVer {
+		app.OK(c, result, "已是最新固件")
+	}else {
+		path := "static/uploadfile/firmware/" + result.FileName
+		c.File(path)
+	}
 }
